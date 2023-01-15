@@ -1,3 +1,3 @@
-# [Your plugin name]
+# Raster Dato Plugin
 
-[Describe what your plugin does, and how users you can configure it! Screenshots are always welcome!]
+Getting images from Raster and use them in your DatoCMS project.
