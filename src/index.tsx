@@ -2,7 +2,7 @@ import { IntentCtx, RenderFieldExtensionCtx, connect } from 'datocms-plugin-sdk'
 import { render } from './utils/render'
 import ConfigScreen from './entrypoints/ConfigScreen'
 import 'datocms-react-ui/styles.css'
-import PhotoSelector from './components/PhotoSelector'
+import Selector from './components/Selector'
 
 connect({
 	manualFieldExtensions(ctx: IntentCtx) {
@@ -18,7 +18,7 @@ connect({
 	renderFieldExtension(fieldExtensionId: string, ctx: RenderFieldExtensionCtx) {
 		switch (fieldExtensionId) {
 			case 'raster':
-				return render(<PhotoSelector ctx={ctx} />)
+				return render(<Selector ctx={ctx} />)
 			default:
 				return null
 		}
