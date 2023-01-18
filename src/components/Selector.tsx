@@ -1,6 +1,6 @@
 import { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { Canvas } from 'datocms-react-ui'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 import { clsx } from 'clsx'
 import get from 'lodash/get'
@@ -25,36 +25,36 @@ export default function Selector({ ctx }: Props) {
 		const initialValue = get(ctx?.formValues, ctx?.fieldPath || '') as any
 		return typeof initialValue === 'string' ? JSON.parse(initialValue) : null
 	}, [ctx])
-	console.log('--> selectedPhoto', selectedPhoto.thumbUrl)
 
-	useEffect(() => {
-		const getLibraries = async () => {
-			let results = await fetch('https://raster-graphql-apis-production.up.railway.app', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization:
-						typeof ctx.plugin.attributes.parameters.apiKey === 'string'
-							? `Bearer ${ctx.plugin.attributes.parameters.apiKey}`
-							: '',
-					'Apollo-Require-Preflight': 'true'
-				},
+	const expandView = () => {
+		setExpandedView(true)
+		getLibraries()
+	}
 
-				body: `
+	const getLibraries = async () => {
+		let results = await fetch('https://raster-graphql-apis-production.up.railway.app', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization:
+					typeof ctx.plugin.attributes.parameters.apiKey === 'string'
+						? `Bearer ${ctx.plugin.attributes.parameters.apiKey}`
+						: '',
+				'Apollo-Require-Preflight': 'true'
+			},
+
+			body: `
 				{
 					"query": "query Libraries($organizationId: String!) { libraries(organizationId: $organizationId) { id name photosCount }}",
 					"operationName": "Libraries",
 					"variables": { "organizationId": "${ctx.plugin.attributes.parameters.rasterOrgId}" }
 				}
 				`
-			})
+		})
 
-			const libraries = await results.json()
-			setLibraries(libraries.data.libraries)
-		}
-
-		getLibraries()
-	}, [])
+		const libraries = await results.json()
+		setLibraries(libraries.data.libraries)
+	}
 
 	// Make sure the plugin is configured
 	if (!ctx.plugin.attributes.parameters.rasterOrgId || !ctx.plugin.attributes.parameters.apiKey) {
@@ -72,6 +72,7 @@ export default function Selector({ ctx }: Props) {
 								Close
 							</div>
 						</div>
+
 						<div style={{ display: 'flex' }}>
 							<div style={{ marginRight: '30px', minWidth: '200px' }}>
 								<div className="libraries">
@@ -95,16 +96,14 @@ export default function Selector({ ctx }: Props) {
 								</div>
 							</div>
 
-							<div>
-								{selectedLibrary.id && <BrowsePhotos library={selectedLibrary} ctx={ctx} />}
-							</div>
+							{selectedLibrary.id && <BrowsePhotos library={selectedLibrary} ctx={ctx} />}
 						</div>
 					</div>
 				) : (
 					<>
 						<div>
 							<img src={selectedPhoto.thumbUrl} alt={selectedPhoto.id} width={100} />
-							<div className="primary-action" onClick={() => setExpandedView(true)}>
+							<div className="primary-action" onClick={expandView}>
 								Change
 							</div>
 						</div>

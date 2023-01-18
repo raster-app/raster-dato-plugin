@@ -4,6 +4,8 @@ import { clsx } from 'clsx'
 
 import get from 'lodash/get'
 
+import IconDocumentDuplicate from '../icons/IconDocumentDuplicate.svg'
+
 type Props = {
 	ctx: RenderFieldExtensionCtx
 	library: {
@@ -19,18 +21,24 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 	const [selectedPhoto, setSelectedPhoto] = useState(
 		typeof initialValue === 'string' ? JSON.parse(initialValue) : null
 	)
+	const [viewsView, setViewsView] = useState(false)
+	const [photoViews, setPhotoViews] = useState<any[]>([])
 
 	const query = `
 	query Photos($organizationId: String!, $libraryId: String!) {
 		photos(organizationId: $organizationId, libraryId: $libraryId) {
 			id
-			tags
 			blurhash
-			thumbUrlBlurred
 			thumbUrl
-			baseUrl
+			thumbUrlBlurred
+			url
 			height
 			width
+			views {
+				name
+				url
+				thumbUrl
+			}
 		}
 	}
 	`
@@ -61,8 +69,6 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 			})
 
 			const libraryPhotos = await results.json()
-			console.log('-> photos', libraryPhotos.data)
-
 			if (libraryPhotos.data && libraryPhotos.data.photos.length > 0)
 				setPhotos(libraryPhotos.data.photos)
 			else {
@@ -73,31 +79,65 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		getPhotosFromLibrary()
 	}, [library])
 
+	const showPhotoViews = (photo: any) => {
+		setViewsView(true)
+		setPhotoViews(photo.views)
+	}
+
 	const handlePhotoClick = (photo: any) => {
 		setSelectedPhoto(photo)
+		setViewsView(false)
 		ctx?.setFieldValue(ctx.fieldPath, photo ? JSON.stringify(photo) : '')
 	}
 
 	return (
-		<div>
-			<h3 style={{ margin: '0 0 10px 0' }}>{library.name}</h3>
-			<div className="photos">
-				{photos.length > 0 ? (
-					photos.map((photo: any) => {
-						return (
+		<div className="photos">
+			{viewsView && (
+				<div className="photo-modal">
+					<div className="header">
+						<div>
+							<div>Photo Views</div>
+							<div>The selected image has more than one views.</div>
+						</div>
+
+						<div onClick={() => setViewsView(false)}>Close</div>
+					</div>
+
+					<div>
+						{photoViews &&
+							photoViews.map((view: any) => {
+								return (
+									<div onClick={() => handlePhotoClick(view)}>
+										<img src={view.thumbUrl} alt={view.name} width={64} /> {view.name}
+									</div>
+								)
+							})}
+					</div>
+				</div>
+			)}
+
+			{photos.length > 0 &&
+				photos.map((photo: any) => {
+					return (
+						<div className="photo-group" key={photo.id}>
 							<div
-								onClick={() => handlePhotoClick(photo)}
 								className={clsx('photo', photo.id === selectedPhoto.id && 'selected')}
+								onClick={() =>
+									photo.views.length ? showPhotoViews(photo) : handlePhotoClick(photo)
+								}
 								key={photo.id}
 							>
 								<img src={photo.thumbUrl} alt={photo.id} width={64} />
 							</div>
-						)
-					})
-				) : (
-					<p>No photos found</p>
-				)}
-			</div>
+
+							{photo.views.length > 0 && (
+								<div>
+									<img src={IconDocumentDuplicate} alt="alternative views" width={16} />
+								</div>
+							)}
+						</div>
+					)
+				})}
 		</div>
 	)
 }
