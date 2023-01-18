@@ -35,6 +35,8 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 			height
 			width
 			views {
+				id
+				parentId
 				name
 				url
 				thumbUrl
@@ -121,7 +123,10 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 					return (
 						<div className="photo-group" key={photo.id}>
 							<div
-								className={clsx('photo', photo.id === selectedPhoto.id && 'selected')}
+								className={clsx(
+									'photo',
+									[selectedPhoto.id, selectedPhoto.parentId].includes(photo.id) && 'selected'
+								)}
 								onClick={() =>
 									photo.views.length ? showPhotoViews(photo) : handlePhotoClick(photo)
 								}
@@ -129,7 +134,6 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 							>
 								<img src={photo.thumbUrl} alt={photo.id} width={64} />
 							</div>
-
 							{photo.views.length > 0 && (
 								<div>
 									<img src={IconDocumentDuplicate} alt="alternative views" width={16} />
