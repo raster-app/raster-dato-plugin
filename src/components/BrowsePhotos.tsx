@@ -56,7 +56,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 
 	useEffect(() => {
 		const getPhotosFromLibrary = async () => {
-			let results = await fetch('https://raster-graphql-apis-production.up.railway.app', {
+			let results = await fetch('https://api.raster.app', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
