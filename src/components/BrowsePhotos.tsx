@@ -79,6 +79,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		}
 
 		getPhotosFromLibrary()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [library])
 
 	const showPhotoViews = (photo: any) => {
