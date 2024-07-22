@@ -11,8 +11,8 @@ connect({
 				id: 'raster',
 				name: 'Raster.app',
 				type: 'editor',
-				fieldTypes: ['json']
-			}
+				fieldTypes: ['json'],
+			},
 		]
 	},
 	renderFieldExtension(fieldExtensionId: string, ctx: RenderFieldExtensionCtx) {
@@ -25,5 +25,5 @@ connect({
 	},
 	renderConfigScreen(ctx) {
 		return render(<ConfigScreen ctx={ctx} />)
-	}
+	},
 })

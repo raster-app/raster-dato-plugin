@@ -23,7 +23,7 @@ export default function ConfigScreen({ ctx }: Props) {
 	const handleSave = () => {
 		const newParameters: ValidParameters = {
 			rasterOrgId,
-			apiKey
+			apiKey,
 		}
 
 		ctx.updatePluginParameters(newParameters)

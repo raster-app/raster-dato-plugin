@@ -17,7 +17,7 @@ export default function Selector({ ctx }: Props) {
 	const [selectedLibrary, setSelectedLibrary] = useState<any>({
 		id: null,
 		name: null,
-		photosCount: 0
+		photosCount: 0,
 	})
 
 	// const selectedPhoto = get(ctx?.formValues, ctx?.fieldPath || '') as any
@@ -40,7 +40,7 @@ export default function Selector({ ctx }: Props) {
 					typeof ctx.plugin.attributes.parameters.apiKey === 'string'
 						? `Bearer ${ctx.plugin.attributes.parameters.apiKey}`
 						: '',
-				'Apollo-Require-Preflight': 'true'
+				'Apollo-Require-Preflight': 'true',
 			},
 
 			body: `
@@ -49,7 +49,7 @@ export default function Selector({ ctx }: Props) {
 					"operationName": "Libraries",
 					"variables": { "organizationId": "${ctx.plugin.attributes.parameters.rasterOrgId}" }
 				}
-				`
+				`,
 		})
 
 		const libraries = await results.json()

@@ -50,8 +50,8 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		operationName: 'Photos',
 		variables: {
 			organizationId: ctx.plugin.attributes.parameters.rasterOrgId,
-			libraryId: library.id
-		}
+			libraryId: library.id,
+		},
 	}
 
 	useEffect(() => {
@@ -64,10 +64,10 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 						typeof ctx.plugin.attributes.parameters.apiKey === 'string'
 							? `Bearer ${ctx.plugin.attributes.parameters.apiKey}`
 							: '',
-					'Apollo-Require-Preflight': 'true'
+					'Apollo-Require-Preflight': 'true',
 				},
 
-				body: JSON.stringify(body)
+				body: JSON.stringify(body),
 			})
 
 			const libraryPhotos = await results.json()
