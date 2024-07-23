@@ -8,21 +8,15 @@ import IconDocumentDuplicate from '../icons/IconDocumentDuplicate.svg'
 
 type Props = {
 	ctx: RenderFieldExtensionCtx
-	library: {
-		id: string
-		name: string
-		photosCount: number
-	}
+	library: Library
 }
 
 export default function BrowsePhotos({ library, ctx }: Props) {
-	const [photos, setPhotos] = useState<any[]>([])
+	const [photos, setPhotos] = useState<Image[]>([])
 	const initialValue = get(ctx?.formValues, ctx?.fieldPath || '')
-	const [selectedPhoto, setSelectedPhoto] = useState(
-		typeof initialValue === 'string' ? JSON.parse(initialValue) : null
-	)
+	const [selectedPhotos, setSelectedPhotos] = useState<Image[]>([])
 	const [viewsView, setViewsView] = useState(false)
-	const [photoViews, setPhotoViews] = useState<any[]>([])
+	const [photoViews, setPhotoViews] = useState<Image[]>([])
 
 	const query = `
 	query Photos($organizationId: String!, $libraryId: String!) {
@@ -49,14 +43,14 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		query,
 		operationName: 'Photos',
 		variables: {
-			organizationId: ctx.plugin.attributes.parameters.rasterOrgId,
+			organizationId: ctx.plugin.attributes.parameters.orgId,
 			libraryId: library.id,
 		},
 	}
 
 	useEffect(() => {
 		const getPhotosFromLibrary = async () => {
-			let results = await fetch('https://api.raster.app', {
+			let results = await fetch('https://apis.raster.app', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -82,13 +76,21 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [library])
 
-	const showPhotoViews = (photo: any) => {
+	const showPhotoViews = (photo: Image) => {
 		setViewsView(true)
-		setPhotoViews(photo.views)
+		if (photo.views) {
+			setPhotoViews(photo.views)
+		}
 	}
 
-	const handlePhotoClick = (photo: any) => {
-		setSelectedPhoto(photo)
+	const handlePhotoClick = (photo: Image) => {
+		setSelectedPhotos((prev) => {
+			if (prev?.length > 0 && prev.find((p) => p.id === photo.id)) {
+				return prev.filter((p) => p.id !== photo.id)
+			} else {
+				return [...(prev || []), photo]
+			}
+		})
 		setViewsView(false)
 		ctx?.setFieldValue(ctx.fieldPath, photo ? JSON.stringify(photo) : '')
 	}
@@ -120,22 +122,24 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 			)}
 
 			{photos.length > 0 &&
-				photos.map((photo: any) => {
+				photos.map((photo) => {
 					return (
 						<div className="photo-group" key={photo.id}>
 							<div
 								className={clsx(
 									'photo',
-									[selectedPhoto.id, selectedPhoto.parentId].includes(photo.id) && 'selected'
+									selectedPhotos?.length > 0 &&
+										selectedPhotos.find((p) => p.id === photo.id) &&
+										'selected'
 								)}
 								onClick={() =>
-									photo.views.length ? showPhotoViews(photo) : handlePhotoClick(photo)
+									Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
 								}
 								key={photo.id}
 							>
 								<img src={photo.thumbUrl} alt={photo.id} width={64} />
 							</div>
-							{photo.views.length > 0 && (
+							{Boolean(photo?.views?.length) && (
 								<div>
 									<img src={IconDocumentDuplicate} alt="alternative views" width={16} />
 								</div>

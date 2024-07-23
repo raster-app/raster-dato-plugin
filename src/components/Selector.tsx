@@ -1,63 +1,66 @@
 import { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { Canvas } from 'datocms-react-ui'
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
+import useSWR from 'swr'
 
 import { clsx } from 'clsx'
 import get from 'lodash/get'
 
 import './styles.css'
 import BrowsePhotos from './BrowsePhotos'
+import { swrLibreriesFetcher } from '../lib/fetcher'
+import { getLibraryListQuery } from '../lib/graphql/queries'
 
 type Props = {
 	ctx: RenderFieldExtensionCtx
 }
 export default function Selector({ ctx }: Props) {
 	const [expandedView, setExpandedView] = useState(false)
-	const [libraries, setLibraries] = useState<any[]>([])
-	const [selectedLibrary, setSelectedLibrary] = useState<any>({
-		id: null,
-		name: null,
-		photosCount: 0,
-	})
+	const [libraries, setLibraries] = useState<Library[]>()
+	const [selectedLibrary, setSelectedLibrary] = useState<Library>()
+	const [selectedPhoto, setSelectedPhoto] = useState<Image>()
 
-	// const selectedPhoto = get(ctx?.formValues, ctx?.fieldPath || '') as any
-	const selectedPhoto = useMemo(() => {
-		const initialValue = get(ctx?.formValues, ctx?.fieldPath || '') as any
-		return typeof initialValue === 'string' ? JSON.parse(initialValue) : null
-	}, [ctx])
+	const { orgId, apiKey } = ctx.plugin.attributes.parameters
 
-	const expandView = () => {
-		setExpandedView(true)
-		getLibraries()
-	}
-
-	const getLibraries = async () => {
-		let results = await fetch('https://raster-graphql-apis-production.up.railway.app', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization:
-					typeof ctx.plugin.attributes.parameters.apiKey === 'string'
-						? `Bearer ${ctx.plugin.attributes.parameters.apiKey}`
-						: '',
-				'Apollo-Require-Preflight': 'true',
+	// Get the list of libraries
+	const { data } = useSWR(
+		{
+			query: getLibraryListQuery,
+			variables: {
+				organizationId: orgId,
 			},
+			settings: { apiKey, orgId },
+		},
+		swrLibreriesFetcher,
+		{
+			revalidateIfStale: false,
+			revalidateOnFocus: false,
+			revalidateOnReconnect: false,
+		}
+	)
 
-			body: `
-				{
-					"query": "query Libraries($organizationId: String!) { libraries(organizationId: $organizationId) { id name photosCount }}",
-					"operationName": "Libraries",
-					"variables": { "organizationId": "${ctx.plugin.attributes.parameters.rasterOrgId}" }
-				}
-				`,
-		})
+	useEffect(() => {
+		if (data && data.length > 0 && !libraries?.length) {
+			setLibraries(data)
+		}
+	}, [data, libraries])
 
-		const libraries = await results.json()
-		setLibraries(libraries.data.libraries)
+	useEffect(() => {
+		const initialValue = get(ctx?.formValues, ctx?.fieldPath || '')
+		if (typeof initialValue === 'string') {
+			setSelectedPhoto(JSON.parse(initialValue))
+		}
+	}, [ctx?.fieldPath, ctx?.formValues])
+
+	const handleSelect = (img?: Image) => {
+		if (!img) return
+		setExpandedView(true)
+		const imgLibrary = img.url.split('/')[4]
+		setSelectedLibrary(libraries?.find((lib) => lib.id === imgLibrary))
 	}
 
 	// Make sure the plugin is configured
-	if (!ctx.plugin.attributes.parameters.rasterOrgId || !ctx.plugin.attributes.parameters.apiKey) {
+	if (!ctx.plugin.attributes.parameters.orgId || !ctx.plugin.attributes.parameters.apiKey) {
 		return <>Please configure the plugin first</>
 	}
 
@@ -68,21 +71,26 @@ export default function Selector({ ctx }: Props) {
 					<div>
 						<div className="title">
 							<p>Select image from Raster</p>
-							<div className="primary-action" onClick={() => setExpandedView(false)}>
-								Close
+							<div>
+								<div className="primary-action" onClick={() => setExpandedView(false)}>
+									Close
+								</div>
+								<div className="primary-action" onClick={() => setExpandedView(false)}>
+									Save
+								</div>
 							</div>
 						</div>
 
 						<div style={{ display: 'flex' }}>
 							<div style={{ marginRight: '30px', minWidth: '200px' }}>
 								<div className="libraries">
-									{libraries.length > 0 &&
+									{libraries &&
 										libraries.map((library) => {
 											return (
 												<div
 													className={clsx(
 														`library`,
-														selectedLibrary.id === library.id && 'selected'
+														selectedLibrary?.id === library.id && 'selected'
 													)}
 													key={library.id}
 													onClick={() => {
@@ -96,16 +104,18 @@ export default function Selector({ ctx }: Props) {
 								</div>
 							</div>
 
-							{selectedLibrary.id && <BrowsePhotos library={selectedLibrary} ctx={ctx} />}
+							{selectedLibrary?.id && <BrowsePhotos library={selectedLibrary} ctx={ctx} />}
 						</div>
 					</div>
 				) : (
 					<>
 						<div>
-							<img src={selectedPhoto.thumbUrl} alt={selectedPhoto.id} width={100} />
-							<div className="primary-action" onClick={expandView}>
-								Change
-							</div>
+							<img
+								src={selectedPhoto?.thumbUrl}
+								alt={selectedPhoto?.id}
+								width={100}
+								onClick={() => handleSelect(selectedPhoto)}
+							/>
 						</div>
 					</>
 				)}

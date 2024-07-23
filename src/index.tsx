@@ -9,7 +9,7 @@ connect({
 		return [
 			{
 				id: 'raster',
-				name: 'Raster.app',
+				name: 'Raster',
 				type: 'editor',
 				fieldTypes: ['json'],
 			},

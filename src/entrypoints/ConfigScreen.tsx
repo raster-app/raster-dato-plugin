@@ -4,7 +4,7 @@ import s from './styles.module.css'
 import { useState } from 'react'
 
 // this is how we want to save our settings
-type ValidParameters = { rasterOrgId: string; apiKey: string }
+type ValidParameters = { orgId: string; apiKey: string }
 
 // parameters can be either empty or filled in
 type Parameters = ValidParameters
@@ -17,12 +17,12 @@ export default function ConfigScreen({ ctx }: Props) {
 	const parameters = ctx.plugin.attributes.parameters as Parameters
 
 	// Props
-	const [rasterOrgId, setRasterOrgId] = useState(parameters.rasterOrgId)
+	const [orgId, setOrgId] = useState(parameters.orgId)
 	const [apiKey, setApiKey] = useState(parameters.apiKey)
 
 	const handleSave = () => {
 		const newParameters: ValidParameters = {
-			rasterOrgId,
+			orgId,
 			apiKey,
 		}
 
@@ -31,7 +31,7 @@ export default function ConfigScreen({ ctx }: Props) {
 
 	return (
 		<Canvas ctx={ctx}>
-			<p>Welcome to the Raster.app Plugin</p>
+			<p>Welcome to the Raster Plugin!</p>
 
 			<div className={s.inspector}>
 				{/* Organization ID */}
@@ -41,9 +41,9 @@ export default function ConfigScreen({ ctx }: Props) {
 						<TextField
 							id="02"
 							name="org-id"
-							label="Organization ID"
-							value={rasterOrgId}
-							onChange={(newValue) => setRasterOrgId(newValue)}
+							label="Raster Organization ID"
+							value={orgId}
+							onChange={(newValue) => setOrgId(newValue)}
 						/>
 					</div>
 
