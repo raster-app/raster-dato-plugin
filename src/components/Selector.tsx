@@ -10,15 +10,22 @@ import './styles.css'
 import BrowsePhotos from './BrowsePhotos'
 import { swrLibreriesFetcher } from '../lib/fetcher'
 import { getLibraryListQuery } from '../lib/graphql/queries'
+import { useSelectedPhotosStore } from '../lib/store/useSelectedPhotosStore'
 
 type Props = {
 	ctx: RenderFieldExtensionCtx
 }
+
 export default function Selector({ ctx }: Props) {
 	const [expandedView, setExpandedView] = useState(false)
 	const [libraries, setLibraries] = useState<Library[]>()
 	const [selectedLibrary, setSelectedLibrary] = useState<Library>()
-	const [selectedPhoto, setSelectedPhoto] = useState<Image>()
+
+	const [selectedPhotos, setInitialValue, setSelectedPhotos] = useSelectedPhotosStore((state) => [
+		state.selectedPhotos,
+		state.setInitialValue,
+		state.setSelectedPhotos,
+	])
 
 	const { orgId, apiKey } = ctx.plugin.attributes.parameters
 
@@ -47,10 +54,8 @@ export default function Selector({ ctx }: Props) {
 
 	useEffect(() => {
 		const initialValue = get(ctx?.formValues, ctx?.fieldPath || '')
-		if (typeof initialValue === 'string') {
-			setSelectedPhoto(JSON.parse(initialValue))
-		}
-	}, [ctx?.fieldPath, ctx?.formValues])
+		setInitialValue(initialValue)
+	}, [ctx?.fieldPath, ctx?.formValues, setInitialValue])
 
 	const handleSelect = (img?: Image) => {
 		if (!img) return
@@ -70,15 +75,68 @@ export default function Selector({ ctx }: Props) {
 				{expandedView ? (
 					<div>
 						<div className="title">
-							<p>Select image from Raster</p>
+							<h2>Select image from Raster</h2>
 							<div>
-								<div className="primary-action" onClick={() => setExpandedView(false)}>
+								<button
+									type="button"
+									className="primary-action"
+									onClick={() => setExpandedView(false)}
+								>
 									Close
-								</div>
-								<div className="primary-action" onClick={() => setExpandedView(false)}>
+								</button>
+								<button
+									type="button"
+									className="primary-action"
+									onClick={() => {
+										ctx?.setFieldValue(
+											ctx.fieldPath,
+											JSON.stringify(Boolean(selectedPhotos.length) ? selectedPhotos : [])
+										)
+										setExpandedView(false)
+									}}
+								>
 									Save
-								</div>
+								</button>
+								<button
+									type="button"
+									className="primary-action"
+									onClick={() => {
+										setInitialValue([])
+										setExpandedView(false)
+									}}
+								>
+									Reset
+								</button>
 							</div>
+						</div>
+
+						<div className="preview-container">
+							<p>Selected:</p>
+							{Boolean(selectedPhotos.length) ? (
+								<div className="preview-selected-container">
+									{selectedPhotos?.map((item) => (
+										<div>
+											<img
+												className="preview-selected"
+												key={item?.id}
+												src={item?.url}
+												alt={item?.id}
+												width={100}
+												onClick={() => {
+													setSelectedPhotos(item)
+												}}
+											/>
+											{item.width && (
+												<span>
+													({item.width}x{item.height})
+												</span>
+											)}
+										</div>
+									))}
+								</div>
+							) : (
+								<p>No images selected</p>
+							)}
 						</div>
 
 						<div style={{ display: 'flex' }}>
@@ -109,14 +167,30 @@ export default function Selector({ ctx }: Props) {
 					</div>
 				) : (
 					<>
-						<div>
-							<img
-								src={selectedPhoto?.thumbUrl}
-								alt={selectedPhoto?.id}
-								width={100}
-								onClick={() => handleSelect(selectedPhoto)}
-							/>
-						</div>
+						{Boolean(selectedPhotos.length) ? (
+							<div className="selected-photos">
+								{selectedPhotos?.map((item) => (
+									<img
+										key={item?.id}
+										src={item?.thumbUrl}
+										alt={item?.id}
+										width={100}
+										onClick={() => handleSelect(item)}
+									/>
+								))}
+							</div>
+						) : (
+							<div className="empty-state">
+								<h2>No images selected</h2>
+								<button
+									type="button"
+									className="primary-action"
+									onClick={() => setExpandedView(true)}
+								>
+									Select Images
+								</button>
+							</div>
+						)}
 					</>
 				)}
 			</div>

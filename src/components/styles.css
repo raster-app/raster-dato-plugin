@@ -43,6 +43,8 @@
 }
 
 .photos .photo {
+	display: grid;
+	grid-auto-flow: row;
 	margin: 3px;
 	border: 5px solid transparent;
 }
@@ -61,7 +63,6 @@
 }
 
 .title {
-	margin: var(--spacing-m);
 	display: flex;
 	justify-content: space-between;
 }
@@ -90,4 +91,31 @@
 .photo-modal .header > div {
 	display: flex;
 	flex-direction: column;
+}
+
+.selected-photos {
+	display: grid;
+	grid-auto-flow: column;
+	gap: 10px;
+	max-width: 100%;
+	width: fit-content;
+}
+
+.preview-selected-container {
+	display: grid;
+	grid-auto-flow: column;
+	gap: 10px;
+	width: fit-content;
+	max-width: 100%;
+
+	img {
+		display: flex;
+		flex-direction: column;
+		width: 100px;
+		height: 100px;
+	}
+}
+
+.preview-container {
+	margin-bottom: 32px;
 }

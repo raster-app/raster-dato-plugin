@@ -2,9 +2,8 @@ import { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { useState, useEffect } from 'react'
 import { clsx } from 'clsx'
 
-import get from 'lodash/get'
-
 import IconDocumentDuplicate from '../icons/IconDocumentDuplicate.svg'
+import { useSelectedPhotosStore } from '../lib/store/useSelectedPhotosStore'
 
 type Props = {
 	ctx: RenderFieldExtensionCtx
@@ -13,10 +12,13 @@ type Props = {
 
 export default function BrowsePhotos({ library, ctx }: Props) {
 	const [photos, setPhotos] = useState<Image[]>([])
-	const initialValue = get(ctx?.formValues, ctx?.fieldPath || '')
-	const [selectedPhotos, setSelectedPhotos] = useState<Image[]>([])
 	const [viewsView, setViewsView] = useState(false)
 	const [photoViews, setPhotoViews] = useState<Image[]>([])
+
+	const [selectedPhotos, setSelectedPhotos] = useSelectedPhotosStore((state) => [
+		state.selectedPhotos,
+		state.setSelectedPhotos,
+	])
 
 	const query = `
 	query Photos($organizationId: String!, $libraryId: String!) {
@@ -84,15 +86,8 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 	}
 
 	const handlePhotoClick = (photo: Image) => {
-		setSelectedPhotos((prev) => {
-			if (prev?.length > 0 && prev.find((p) => p.id === photo.id)) {
-				return prev.filter((p) => p.id !== photo.id)
-			} else {
-				return [...(prev || []), photo]
-			}
-		})
+		setSelectedPhotos(photo)
 		setViewsView(false)
-		ctx?.setFieldValue(ctx.fieldPath, photo ? JSON.stringify(photo) : '')
 	}
 
 	return (
@@ -110,10 +105,18 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 
 					<div>
 						{photoViews &&
-							photoViews.map((view: any) => {
+							photoViews.map((view: Image) => {
 								return (
-									<div onClick={() => handlePhotoClick(view)}>
-										<img src={view.thumbUrl} alt={view.name} width={64} /> {view.name}
+									<div
+										onClick={() => handlePhotoClick(view)}
+										className={clsx(
+											'photo',
+											selectedPhotos?.length > 0 &&
+												selectedPhotos.find((p) => p.id === view.id || p.parentId === view.id) &&
+												'selected'
+										)}
+									>
+										<img src={view.thumbUrl} alt={view.name} width={64} />
 									</div>
 								)
 							})}
@@ -123,13 +126,14 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 
 			{photos.length > 0 &&
 				photos.map((photo) => {
+					console.log('Photo: ', photo.name)
 					return (
 						<div className="photo-group" key={photo.id}>
 							<div
 								className={clsx(
 									'photo',
 									selectedPhotos?.length > 0 &&
-										selectedPhotos.find((p) => p.id === photo.id) &&
+										selectedPhotos.find((p) => p.id === photo.id || p.parentId === photo.id) &&
 										'selected'
 								)}
 								onClick={() =>
@@ -138,6 +142,9 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 								key={photo.id}
 							>
 								<img src={photo.thumbUrl} alt={photo.id} width={64} />
+								<span>
+									({photo.width}x{photo.height})
+								</span>
 							</div>
 							{Boolean(photo?.views?.length) && (
 								<div>
