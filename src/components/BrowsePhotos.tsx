@@ -126,7 +126,6 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 
 			{photos.length > 0 &&
 				photos.map((photo) => {
-					console.log('Photo: ', photo.name)
 					return (
 						<div className="photo-group" key={photo.id}>
 							<div
