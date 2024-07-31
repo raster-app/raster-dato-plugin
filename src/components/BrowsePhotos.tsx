@@ -4,6 +4,7 @@ import { clsx } from 'clsx'
 
 import IconDocumentDuplicate from '../icons/IconDocumentDuplicate.svg'
 import { useSelectedPhotosStore } from '../lib/store/useSelectedPhotosStore'
+import RasterImage from './Image'
 
 type Props = {
 	ctx: RenderFieldExtensionCtx
@@ -124,35 +125,35 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 				</div>
 			)}
 
-			{photos.length > 0 &&
-				photos.map((photo) => {
-					return (
-						<div className="photo-group" key={photo.id}>
-							<div
-								className={clsx(
-									'photo',
-									selectedPhotos?.length > 0 &&
-										selectedPhotos.find((p) => p.id === photo.id || p.parentId === photo.id) &&
-										'selected'
-								)}
-								onClick={() =>
-									Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
-								}
-								key={photo.id}
-							>
-								<img src={photo.thumbUrl} alt={photo.id} width={64} />
-								<span>
-									({photo.width}x{photo.height})
-								</span>
-							</div>
-							{Boolean(photo?.views?.length) && (
-								<div>
-									<img src={IconDocumentDuplicate} alt="alternative views" width={16} />
+			{photos.length > 0 && (
+				<div className="columns-3 gap-4">
+					{photos.map((photo) => {
+						return (
+							<div key={photo.id}>
+								<div
+									className={clsx(
+										'photo',
+										selectedPhotos?.length > 0 &&
+											selectedPhotos.find((p) => p.id === photo.id || p.parentId === photo.id) &&
+											'selected'
+									)}
+									onClick={() =>
+										Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
+									}
+									key={photo.id}
+								>
+									<RasterImage image={photo} displayName={false} />
 								</div>
-							)}
-						</div>
-					)
-				})}
+								{Boolean(photo?.views?.length) && (
+									<div>
+										<img src={IconDocumentDuplicate} alt="alternative views" width={16} />
+									</div>
+								)}
+							</div>
+						)
+					})}
+				</div>
+			)}
 		</div>
 	)
 }

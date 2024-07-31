@@ -3,6 +3,7 @@ import { render } from './utils/render'
 import ConfigScreen from './entrypoints/ConfigScreen'
 import 'datocms-react-ui/styles.css'
 import Selector from './components/Selector'
+import './styles/globals.scss'
 
 connect({
 	manualFieldExtensions(ctx: IntentCtx) {
