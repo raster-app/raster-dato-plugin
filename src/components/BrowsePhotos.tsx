@@ -126,29 +126,27 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 			)}
 
 			{photos.length > 0 && (
-				<div className="columns-3 gap-4">
+				<div className="columns-2 gap-4">
 					{photos.map((photo) => {
 						return (
-							<div key={photo.id}>
-								<div
-									className={clsx(
-										'photo',
-										selectedPhotos?.length > 0 &&
-											selectedPhotos.find((p) => p.id === photo.id || p.parentId === photo.id) &&
-											'selected'
-									)}
-									onClick={() =>
-										Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
-									}
-									key={photo.id}
-								>
-									<RasterImage image={photo} displayName={false} />
-								</div>
-								{Boolean(photo?.views?.length) && (
-									<div>
-										<img src={IconDocumentDuplicate} alt="alternative views" width={16} />
-									</div>
+							<div
+								key={photo.id}
+								className={clsx(
+									'photo',
+									selectedPhotos?.length > 0 &&
+										selectedPhotos.find((p) => p.id === photo.id || p.parentId === photo.id) &&
+										'selected'
 								)}
+								onClick={() =>
+									Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
+								}
+							>
+								<RasterImage
+									image={photo}
+									displayName={false}
+									openVersions={showPhotoViews}
+									selected={selectedPhotos.includes(photo)}
+								/>
 							</div>
 						)
 					})}

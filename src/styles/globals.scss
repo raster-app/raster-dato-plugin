@@ -44,8 +44,6 @@
 	@apply gap-4 columns-4;
 
 	.image {
-		@apply w-full aspect-video mb-4 text-gray-500;
-
 		img {
 			/* @apply rounded-md; */
 			@apply w-screen;
@@ -53,13 +51,6 @@
 
 		.photo-name {
 			@apply pt-1 text-gray-800;
-		}
-
-		.versions {
-			@apply absolute top-2 right-2 bg-gray-900/80 px-2.5 py-1 rounded-md font-bold cursor-pointer text-gray-300 flex gap-1.5 items-center;
-			&:hover {
-				@apply bg-gray-900/90;
-			}
 		}
 	}
 }

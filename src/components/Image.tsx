@@ -30,7 +30,7 @@ const RasterImage = ({
 	}
 
 	return (
-		<div className="relative flex flex-col gap-1.5">
+		<div className="relative flex flex-col gap-1.5 mb-4">
 			<button
 				type="button"
 				onClick={() => !thumbnail && chooseImage && chooseImage(image)}
@@ -49,9 +49,8 @@ const RasterImage = ({
 					src={image.thumbUrl}
 					alt={image?.name}
 					className={clsx(
-						'rounded transition-transform duration-300 ease-in-out select-none pointer-events-none bg-gray-100 object-cover',
-						thumbnail ? 'h-36 w-36' : 'group-hover:scale-[1.02]',
-						{ 'h-full': version }
+						'w-full h-full text-gray-500 rounded transition-transform duration-300 ease-in-out select-none pointer-events-none bg-gray-100 object-cover',
+						thumbnail ? 'h-36 w-36' : 'group-hover:scale-[1.02]'
 					)}
 				/>
 				{!thumbnail && openVersions && image?.views && image?.views?.length > 0 && (
@@ -64,7 +63,12 @@ const RasterImage = ({
 							openVersions(image)
 						}}
 					>
-						<div className={clsx('versions', versionSelected ? 'border-2 border-primary' : '')}>
+						<div
+							className={clsx(
+								'absolute top-2 right-2 bg-gray-900/80 px-2.5 py-1 rounded-md font-bold cursor-pointer text-gray-300 flex gap-1.5 items-center hover:bg-gray-900/90',
+								versionSelected ? 'border-2 border-primary' : ''
+							)}
+						>
 							+{image.views.length}
 							{versionSelected && (
 								<span className="h-4 w-4 p-0.5 bg-primary rounded-full flex justify-center items-center">

@@ -124,15 +124,36 @@ const Selector = ({ ctx }: Props) => {
 
 	return (
 		<Canvas ctx={ctx}>
-			<div className="flex items-center justify-between">
-				<h2 className="text-xl font-medium">Select an image from Raster</h2>
-				<div className="flex gap-2">
-					<button type="button" className="primary-action" onClick={() => setExpandedView(false)}>
-						Close
-					</button>
+			<div className="flex items-center justify-between gap-5 py-5">
+				<h2 className="text-2xl font-medium flex flex-col">
+					Select an image from Raster
+					<span className="font-normal text-base text-gray-400">
+						{selectedPhotos.length} selected
+					</span>
+				</h2>
+				<div className="flex gap-3">
 					<button
+						className="w-fit h-fit bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded font-medium transition-colors"
 						type="button"
-						className="primary-action"
+						onClick={() => setExpandedView(false)}
+					>
+						Cancel
+					</button>
+
+					<button
+						className="w-fit h-fit bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded font-medium transition-colors"
+						type="button"
+						onClick={() => {
+							setInitialValue([])
+							setExpandedView(false)
+						}}
+					>
+						Reset
+					</button>
+
+					<button
+						className="w-fit h-fit bg-green hover:bg-green-dark text-white px-3 py-2 rounded font-medium transition-colors"
+						type="button"
 						onClick={() => {
 							ctx?.setFieldValue(
 								ctx.fieldPath,
@@ -143,21 +164,13 @@ const Selector = ({ ctx }: Props) => {
 					>
 						Save
 					</button>
-					<button
-						type="button"
-						className="primary-action"
-						onClick={() => {
-							setInitialValue([])
-							setExpandedView(false)
-						}}
-					>
-						Reset
-					</button>
 				</div>
 			</div>
 
+			<hr className="bg-gray-300 my-5" />
+
 			{expandedView ? (
-				<div className="flex gap-5">
+				<div className="flex gap-10">
 					{/* Libraries */}
 					<div className="flex flex-col gap-2 w-full max-w-56">
 						{libraries &&
@@ -210,7 +223,12 @@ const Selector = ({ ctx }: Props) => {
 												</button>
 
 												<SortableItem id={image.id} isDragging={isDragging}>
-													<RasterImage image={image} displayName={false} thumbnail />
+													<RasterImage
+														image={image}
+														displayName={false}
+														chooseImage={handleSelect}
+														thumbnail
+													/>
 												</SortableItem>
 											</div>
 										))}
@@ -223,14 +241,17 @@ const Selector = ({ ctx }: Props) => {
 												image={selectedPhotos.find((image) => image.id === activeId)!}
 												displayName={false}
 												thumbnail
-												chooseImage={handleSelect}
 											/>
 										</SortableItem>
 									) : null}
 								</DragOverlay>
 							</DndContext>
 						) : (
-							<p>No images selected</p>
+							<div className="relative h-36 w-full mb-2 border rounded-md">
+								<span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+									Please make a selection below.
+								</span>
+							</div>
 						)}
 
 						<hr className="bg-gray-300" />
