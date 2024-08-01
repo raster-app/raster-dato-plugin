@@ -91,67 +91,57 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		setViewsView(false)
 	}
 
-	return (
-		<div className="photos">
-			{viewsView && (
-				<div className="photo-modal">
-					<div className="header">
-						<div>
-							<div>Photo Views</div>
-							<div>The selected image has more than one views.</div>
-						</div>
+	return viewsView ? (
+		<div className="flex flex-col gap-5 py-5">
+			<button
+				onClick={() => setViewsView(false)}
+				className="w-fit h-fit bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded font-medium transition-colors"
+			>
+				Go back
+			</button>
 
-						<div onClick={() => setViewsView(false)}>Close</div>
-					</div>
+			<p>The selected image has more than one version, please make a selection below.</p>
 
-					<div>
-						{photoViews &&
-							photoViews.map((view: Image) => {
-								return (
-									<div
-										onClick={() => handlePhotoClick(view)}
-										className={clsx(
-											'photo',
-											selectedPhotos?.length > 0 &&
-												selectedPhotos.find((p) => p.id === view.id || p.parentId === view.id) &&
-												'selected'
-										)}
-									>
-										<img src={view.thumbUrl} alt={view.name} width={64} />
-									</div>
-								)
-							})}
-					</div>
-				</div>
-			)}
-
-			{photos.length > 0 && (
-				<div className="columns-2 gap-4">
-					{photos.map((photo) => {
+			{photoViews && (
+				<div className="grid grid-cols-2 gap-4">
+					{photoViews.map((view: Image) => {
 						return (
-							<div
-								key={photo.id}
-								className={clsx(
-									'photo',
-									selectedPhotos?.length > 0 &&
-										selectedPhotos.find((p) => p.id === photo.id || p.parentId === photo.id) &&
-										'selected'
-								)}
-								onClick={() =>
-									Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
-								}
-							>
-								<RasterImage
-									image={photo}
-									displayName={false}
-									openVersions={showPhotoViews}
-									selected={selectedPhotos.includes(photo)}
-								/>
-							</div>
+							<RasterImage
+								image={view}
+								displayName
+								selected={selectedPhotos.includes(view)}
+								chooseImage={() => handlePhotoClick(view)}
+							/>
 						)
 					})}
 				</div>
 			)}
+		</div>
+	) : (
+		<div className="columns-2 gap-4">
+			{photos.map((photo) => {
+				return (
+					<div
+						key={photo.id}
+						className={clsx(
+							'photo',
+							selectedPhotos?.length > 0 &&
+								selectedPhotos.find((p) => p.id === photo.id || p.parentId === photo.id) &&
+								'selected'
+						)}
+						onClick={() =>
+							Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
+						}
+					>
+						<RasterImage
+							image={photo}
+							displayName={false}
+							openVersions={showPhotoViews}
+							selected={selectedPhotos.includes(photo)}
+						/>
+					</div>
+				)
+			})}
 		</div>
 	)
 }

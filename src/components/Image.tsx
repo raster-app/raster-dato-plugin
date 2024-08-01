@@ -65,8 +65,8 @@ const RasterImage = ({
 					>
 						<div
 							className={clsx(
-								'absolute top-2 right-2 bg-gray-900/80 px-2.5 py-1 rounded-md font-bold cursor-pointer text-gray-300 flex gap-1.5 items-center hover:bg-gray-900/90',
-								versionSelected ? 'border-2 border-primary' : ''
+								'absolute top-2 right-2 bg-gray-900/80 px-2.5 py-1 text-white rounded-md cursor-pointer text-gray-300 flex gap-1.5 items-center hover:bg-gray-900/90',
+								{ 'border-2 border-primary': versionSelected }
 							)}
 						>
 							+{image.views.length}
@@ -87,7 +87,7 @@ const RasterImage = ({
 					<Check />
 				</span>
 				{image.height && image.width && (
-					<span className="absolute bottom-2 left-2 text-xs bg-gray-900/80 px-2.5 py-1 rounded-md font-medium pointer-events-none text-gray-100">
+					<span className="absolute bottom-2 left-2 text-xs bg-gray-900/80 px-2.5 py-1 rounded-md pointer-events-none text-gray-100">
 						{image.height}×{image.width}
 					</span>
 				)}
