@@ -30,6 +30,12 @@ interface SortableItemProps {
 	isDragging: boolean
 }
 
+interface Library {
+	id: string
+	name: string
+	photosCount: number
+}
+
 function SortableItem({ id, children, isDragging }: SortableItemProps) {
 	const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
 
@@ -54,13 +60,11 @@ function SortableItem({ id, children, isDragging }: SortableItemProps) {
 
 const Selector = ({ ctx }: Props) => {
 	const [expandedView, setExpandedView] = useState(false)
-	const [libraries, setLibraries] = useState<Library[]>()
+	const [libraries, setLibraries] = useState<Library[]>([])
 	const [selectedLibrary, setSelectedLibrary] = useState<Library | null>(null)
-	const [selectedPhotos, setInitialValue, setSelectedPhotos] = useSelectedPhotosStore((state) => [
-		state.selectedPhotos,
-		state.setInitialValue,
-		state.setSelectedPhotos,
-	])
+	const [selectedPhotos, setInitialValue, setSelectedPhotos] = useSelectedPhotosStore(
+		(state: any) => [state.selectedPhotos, state.setInitialValue, state.setSelectedPhotos]
+	)
 
 	const { orgId, apiKey } = ctx.plugin.attributes.parameters
 
@@ -79,7 +83,7 @@ const Selector = ({ ctx }: Props) => {
 	)
 
 	useEffect(() => {
-		if (data && data.length > 0 && !libraries?.length) {
+		if (data && data.length > 0 && !libraries.length) {
 			setLibraries(data)
 		}
 	}, [data, libraries])
@@ -89,9 +93,8 @@ const Selector = ({ ctx }: Props) => {
 		setInitialValue(initialValue)
 	}, [ctx?.fieldPath, ctx?.formValues, setInitialValue])
 
-	// New useEffect to set the first library if none is selected
 	useEffect(() => {
-		if (libraries && libraries.length > 0 && !selectedLibrary) {
+		if (libraries.length > 0 && !selectedLibrary) {
 			setSelectedLibrary(libraries[0])
 		}
 	}, [libraries, selectedLibrary])
@@ -105,10 +108,10 @@ const Selector = ({ ctx }: Props) => {
 		setIsDragging(false)
 
 		if (active.id !== over?.id && over?.id) {
-			setSelectedPhotos((items) => {
-				const oldIndex = items.findIndex((item) => item.id === active.id)
-				const newIndex = items.findIndex((item) => item.id === over.id)
-				return arrayMove(items, oldIndex, newIndex)
+			setSelectedPhotos((images: Image[]) => {
+				const oldIndex = images.findIndex((image) => image.id === active.id)
+				const newIndex = images.findIndex((image) => image.id === over.id)
+				return arrayMove(images, oldIndex, newIndex)
 			})
 		}
 	}
@@ -122,7 +125,7 @@ const Selector = ({ ctx }: Props) => {
 		if (!img) return
 		setExpandedView(true)
 		const imgLibrary = img.url.split('/')[4]
-		setSelectedLibrary(libraries?.find((lib) => lib.id === imgLibrary))
+		setSelectedLibrary(libraries.find((lib) => lib.id === imgLibrary) || null)
 	}
 
 	if (!ctx.plugin.attributes.parameters.orgId || !ctx.plugin.attributes.parameters.apiKey) {
@@ -131,7 +134,7 @@ const Selector = ({ ctx }: Props) => {
 
 	return (
 		<Canvas ctx={ctx}>
-			<div className="border p-5 rounded-md border-gray-200 mt-3">
+			<div className="flex flex-col gap-5 border p-5 rounded-md border-gray-200 mt-3">
 				<div className="flex items-center justify-between gap-5 w-full">
 					<h2 className="text-2xl font-medium flex flex-col">
 						Select an image from Raster
@@ -168,7 +171,7 @@ const Selector = ({ ctx }: Props) => {
 				</div>
 
 				{/* Horizontal line */}
-				{Boolean(selectedPhotos.length) && <hr className="bg-gray-300 mt-5 mb-5" />}
+				{Boolean(selectedPhotos.length) && <hr className="bg-gray-300" />}
 
 				{expandedView ? (
 					<div className="flex gap-8">
@@ -203,14 +206,14 @@ const Selector = ({ ctx }: Props) => {
 								>
 									<SortableContext items={selectedPhotos} strategy={verticalListSortingStrategy}>
 										<div className="flex gap-2 flex-wrap">
-											{selectedPhotos?.map((image) => (
+											{selectedPhotos?.map((image: any) => (
 												<div
 													key={image.id}
 													className="group image relative inline-block opacity-0 animate-fade-in"
 												>
 													<button
 														type="button"
-														onClick={() => handleSelect}
+														onClick={() => handleSelect(image)}
 														aria-label="Remove image"
 														className={clsx(
 															'z-10 text-white border-[3px] border-white absolute -top-2.5 -right-2.5 h-8 w-8 flex justify-center items-center bg-primary rounded-full p-1 hover:bg-primary-dark transition-colors',
@@ -225,9 +228,10 @@ const Selector = ({ ctx }: Props) => {
 															image={image}
 															displayName={false}
 															thumbnail
-															versionSelected={image.views?.some((version) =>
-																selectedVersions.includes(version.id)
-															)}
+															// TODO: implement
+															// versionSelected={image.views?.some((version) =>
+															// 	selectedVersions.includes(version.id)
+															// )}
 														/>
 													</SortableItem>
 												</div>
@@ -238,7 +242,7 @@ const Selector = ({ ctx }: Props) => {
 										{activeId ? (
 											<SortableItem id={activeId} isDragging>
 												<RasterImage
-													image={selectedPhotos.find((image) => image.id === activeId)!}
+													image={selectedPhotos.find((image: any) => image.id === activeId)!}
 													displayName={false}
 													thumbnail
 												/>
@@ -267,9 +271,9 @@ const Selector = ({ ctx }: Props) => {
 					// Selected image thumbnails
 					Boolean(selectedPhotos.length) && (
 						<>
-							<h3 className="text-xl font-medium pb-3">Selected images:</h3>
+							<h3 className="text-xl font-medium">Selected images:</h3>
 							<div className="flex flex-wrap gap-2">
-								{selectedPhotos?.map((image) => (
+								{selectedPhotos?.map((image: any) => (
 									<img
 										key={image.id}
 										src={image.thumbUrl}
