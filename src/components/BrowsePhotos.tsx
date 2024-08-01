@@ -2,7 +2,6 @@ import { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { useState, useEffect } from 'react'
 import { clsx } from 'clsx'
 
-import IconDocumentDuplicate from '../icons/IconDocumentDuplicate.svg'
 import { useSelectedPhotosStore } from '../lib/store/useSelectedPhotosStore'
 import RasterImage from './Image'
 
@@ -92,6 +91,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 	}
 
 	return viewsView ? (
+		// Versions view for selected image
 		<div className="flex flex-col gap-5 py-5">
 			<button
 				onClick={() => setViewsView(false)}
@@ -118,6 +118,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 			)}
 		</div>
 	) : (
+		// All photos for selected library
 		<div className="columns-2 gap-4">
 			{photos.map((photo) => {
 				return (

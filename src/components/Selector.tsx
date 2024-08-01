@@ -167,6 +167,7 @@ const Selector = ({ ctx }: Props) => {
 					</div>
 				</div>
 
+				{/* Horizontal line */}
 				{Boolean(selectedPhotos.length) && <hr className="bg-gray-300 mt-5 mb-5" />}
 
 				{expandedView ? (
@@ -211,7 +212,10 @@ const Selector = ({ ctx }: Props) => {
 														type="button"
 														onClick={() => handleSelect}
 														aria-label="Remove image"
-														className={clsx('remove', { 'opacity-0': isDragging })}
+														className={clsx(
+															'z-10 text-white border-[3px] border-white absolute -top-2.5 -right-2.5 h-8 w-8 flex justify-center items-center bg-primary rounded-full p-1 hover:bg-primary-dark transition-colors',
+															{ 'opacity-0': isDragging }
+														)}
 													>
 														<XMark />
 													</button>
@@ -260,6 +264,7 @@ const Selector = ({ ctx }: Props) => {
 						</div>
 					</div>
 				) : (
+					// Selected image thumbnails
 					Boolean(selectedPhotos.length) && (
 						<>
 							<h3 className="text-xl font-medium pb-3">Selected images:</h3>

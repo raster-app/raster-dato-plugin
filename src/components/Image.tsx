@@ -80,7 +80,7 @@ const RasterImage = ({
 				)}
 				<span
 					className={clsx(
-						'checkmark',
+						'absolute bottom-2 right-2 bg-primary h-7 w-7 p-1 rounded-full pointer-events-none flex items-center justify-center text-white',
 						selected && !thumbnail ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
 					)}
 				>
