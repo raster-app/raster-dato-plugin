@@ -15,9 +15,9 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 	const [viewsView, setViewsView] = useState(false)
 	const [photoViews, setPhotoViews] = useState<Image[]>([])
 
-	const [selectedPhotos, setSelectedPhotos] = useSelectedPhotosStore((state) => [
+	const [selectedPhotos, setPhoto] = useSelectedPhotosStore((state) => [
 		state.selectedPhotos,
-		state.setSelectedPhotos,
+		state.setPhoto,
 	])
 
 	const query = `
@@ -86,7 +86,12 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 	}
 
 	const handlePhotoClick = (photo: Image) => {
-		setSelectedPhotos(photo)
+		let media = photo
+		if (photo.parentId) {
+			const parent = photos.find((p) => p.id === photo.parentId)
+			media = { ...media, width: parent?.width ?? '', height: parent?.height ?? '' }
+		}
+		setPhoto(media)
 		setViewsView(false)
 	}
 
@@ -105,9 +110,10 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 			{photoViews && (
 				<div className="grid grid-cols-2 gap-4">
 					{photoViews.map((view: Image) => {
+						const parent = photos.find((p) => p.id === view.parentId)
 						return (
 							<RasterImage
-								image={view}
+								image={{ ...view, width: parent?.width ?? '', height: parent?.height ?? '' }}
 								displayName
 								selected={selectedPhotos.includes(view)}
 								chooseImage={() => handlePhotoClick(view)}

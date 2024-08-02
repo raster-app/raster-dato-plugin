@@ -1,13 +1,16 @@
+import { DragEndEvent } from '@dnd-kit/core'
+import { arrayMove } from '@dnd-kit/sortable'
 import { create } from 'zustand'
 
 type SelectedPhotos = {
 	selectedPhotos: Image[]
-	setSelectedPhotos: (photo?: Image) => void
+	setPhoto: (photo?: Image) => void
+	reorderPhotos: (event: DragEndEvent) => void
 	setInitialValue: (initialValue: unknown) => void
 }
 
 export const useSelectedPhotosStore = create<SelectedPhotos>()((set, get) => {
-	const setSelectedPhotos = (photo?: Image) => {
+	const setPhoto = (photo?: Image) => {
 		if (!photo) return
 		const current = get().selectedPhotos
 
@@ -28,9 +31,21 @@ export const useSelectedPhotosStore = create<SelectedPhotos>()((set, get) => {
 		set({ selectedPhotos: [] })
 	}
 
+	const reorderPhotos = (event: DragEndEvent) => {
+		const { active, over } = event
+
+		if (active.id !== over?.id && over?.id) {
+			const images = get().selectedPhotos
+			const oldIndex = images.findIndex((image) => image.id === active.id)
+			const newIndex = images.findIndex((image) => image.id === over.id)
+			return set({ selectedPhotos: arrayMove(images, oldIndex, newIndex) })
+		}
+	}
+
 	return {
 		selectedPhotos: [],
-		setSelectedPhotos,
+		setPhoto,
+		reorderPhotos,
 		setInitialValue,
 	}
 })

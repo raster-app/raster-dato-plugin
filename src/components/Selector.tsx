@@ -13,12 +13,7 @@ import XMark from './icons/XMark'
 
 import type { DragEndEvent, DragStartEvent, UniqueIdentifier } from '@dnd-kit/core'
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
-import {
-	arrayMove,
-	SortableContext,
-	useSortable,
-	verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 type Props = {
 	ctx: RenderFieldExtensionCtx
@@ -62,8 +57,9 @@ const Selector = ({ ctx }: Props) => {
 	const [expandedView, setExpandedView] = useState(false)
 	const [libraries, setLibraries] = useState<Library[]>([])
 	const [selectedLibrary, setSelectedLibrary] = useState<Library | null>(null)
-	const [selectedPhotos, setInitialValue, setSelectedPhotos] = useSelectedPhotosStore(
-		(state: any) => [state.selectedPhotos, state.setInitialValue, state.setSelectedPhotos]
+
+	const [selectedPhotos, setInitialValue, reorderPhotos, setPhoto] = useSelectedPhotosStore(
+		(state) => [state.selectedPhotos, state.setInitialValue, state.reorderPhotos, state.setPhoto]
 	)
 
 	const { orgId, apiKey } = ctx.plugin.attributes.parameters
@@ -103,29 +99,14 @@ const Selector = ({ ctx }: Props) => {
 	const [isDragging, setIsDragging] = useState(false)
 
 	const handleDragEnd = (event: DragEndEvent) => {
-		const { active, over } = event
 		setActiveId(null)
 		setIsDragging(false)
-
-		if (active.id !== over?.id && over?.id) {
-			setSelectedPhotos((images: Image[]) => {
-				const oldIndex = images.findIndex((image) => image.id === active.id)
-				const newIndex = images.findIndex((image) => image.id === over.id)
-				return arrayMove(images, oldIndex, newIndex)
-			})
-		}
+		reorderPhotos(event)
 	}
 
 	const handleDragStart = (event: DragStartEvent) => {
 		setActiveId(event.active.id)
 		setIsDragging(true)
-	}
-
-	const handleSelect = (img?: Image) => {
-		if (!img) return
-		setExpandedView(true)
-		const imgLibrary = img.url.split('/')[4]
-		setSelectedLibrary(libraries.find((lib) => lib.id === imgLibrary) || null)
 	}
 
 	if (!ctx.plugin.attributes.parameters.orgId || !ctx.plugin.attributes.parameters.apiKey) {
@@ -213,7 +194,7 @@ const Selector = ({ ctx }: Props) => {
 												>
 													<button
 														type="button"
-														onClick={() => handleSelect(image)}
+														onClick={() => setPhoto(image)}
 														aria-label="Remove image"
 														className={clsx(
 															'z-10 text-white border-[3px] border-white absolute -top-2.5 -right-2.5 h-8 w-8 flex justify-center items-center bg-primary rounded-full p-1 hover:bg-primary-dark transition-colors',
