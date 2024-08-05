@@ -26,7 +26,9 @@ const RasterImage = ({
 }: Props) => {
 	const originalLabel = () => {
 		if (!original) return null
-		return <span className="bg-gray-200 py-0.5 px-1.5 rounded text-gray-500 ml-1">Original</span>
+		return (
+			<span className="bg-gray-200 py-0.5 px-1.5 rounded text-gray-500 ml-1 text-sm">Original</span>
+		)
 	}
 
 	return (
@@ -50,7 +52,7 @@ const RasterImage = ({
 					alt={image?.name}
 					className={clsx(
 						'w-full h-full text-gray-500 rounded transition-transform duration-300 ease-in-out select-none pointer-events-none bg-gray-100 object-cover',
-						thumbnail ? 'h-36 w-36' : 'group-hover:scale-[1.02]'
+						thumbnail ? 'h-36 w-36' : 'group-hover:scale-[1.02] min-h-[147px]'
 					)}
 				/>
 				{!thumbnail && openVersions && image?.views && image?.views?.length > 0 && (
@@ -86,7 +88,7 @@ const RasterImage = ({
 				>
 					<Check />
 				</span>
-				{image.height && image.width && (
+				{!thumbnail && image.height && image.width && (
 					<span className="absolute bottom-2 left-2 text-xs bg-gray-900/80 px-2.5 py-1 rounded-md pointer-events-none text-gray-100">
 						{image.height}×{image.width}
 					</span>

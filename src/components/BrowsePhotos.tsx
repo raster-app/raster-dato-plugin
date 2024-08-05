@@ -1,13 +1,13 @@
 import { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { useState, useEffect } from 'react'
-import { clsx } from 'clsx'
-
 import { useSelectedPhotosStore } from '../lib/store/useSelectedPhotosStore'
 import RasterImage from './Image'
 
 type Props = {
 	ctx: RenderFieldExtensionCtx
 	library: Library
+	chooseVersion: (versionId: string) => void
+	selectedVersions: string[]
 }
 
 export default function BrowsePhotos({ library, ctx }: Props) {
@@ -81,7 +81,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 	const showPhotoViews = (photo: Image) => {
 		setViewsView(true)
 		if (photo.views) {
-			setPhotoViews(photo.views)
+			setPhotoViews([photo, ...photo.views])
 		}
 	}
 
@@ -108,14 +108,20 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 			<p>The selected image has more than one version, please make a selection below.</p>
 
 			{photoViews && (
-				<div className="grid grid-cols-2 gap-4">
-					{photoViews.map((view: Image) => {
+				<div className="columns-2 gap-4">
+					{photoViews.map((view: Image, index: number) => {
 						const parent = photos.find((p) => p.id === view.parentId)
 						return (
 							<RasterImage
-								image={{ ...view, width: parent?.width ?? '', height: parent?.height ?? '' }}
+								key={view.id}
+								image={{
+									...view,
+									width: view.width ?? parent?.width,
+									height: view.height ?? parent?.height,
+								}}
+								original={index === 0}
 								displayName
-								selected={selectedPhotos.includes(view)}
+								selected={selectedPhotos.some((selected) => selected.id === view.id)}
 								chooseImage={() => handlePhotoClick(view)}
 							/>
 						)
@@ -130,12 +136,6 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 				return (
 					<div
 						key={photo.id}
-						className={clsx(
-							'photo',
-							selectedPhotos?.length > 0 &&
-								selectedPhotos.find((p) => p.id === photo.id || p.parentId === photo.id) &&
-								'selected'
-						)}
 						onClick={() =>
 							Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
 						}
@@ -144,7 +144,10 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 							image={photo}
 							displayName={false}
 							openVersions={showPhotoViews}
-							selected={selectedPhotos.includes(photo)}
+							selected={selectedPhotos.some((selected) => selected.id === photo.id)}
+							versionSelected={photo.views?.some((view) =>
+								selectedPhotos.some((selected) => selected.id === view.id)
+							)}
 						/>
 					</div>
 				)

@@ -57,7 +57,7 @@ const Selector = ({ ctx }: Props) => {
 	const [expandedView, setExpandedView] = useState(false)
 	const [libraries, setLibraries] = useState<Library[]>([])
 	const [selectedLibrary, setSelectedLibrary] = useState<Library | null>(null)
-
+	const [selectedVersions, setSelectedVersions] = useState<string[]>([])
 	const [selectedPhotos, setInitialValue, reorderPhotos, setPhoto] = useSelectedPhotosStore(
 		(state) => [state.selectedPhotos, state.setInitialValue, state.reorderPhotos, state.setPhoto]
 	)
@@ -94,6 +94,16 @@ const Selector = ({ ctx }: Props) => {
 			setSelectedLibrary(libraries[0])
 		}
 	}, [libraries, selectedLibrary])
+
+	const handleChooseVersion = (versionId: string) => {
+		setSelectedVersions((prevSelectedVersions) => {
+			const isSelected = prevSelectedVersions.includes(versionId)
+			if (isSelected) {
+				return prevSelectedVersions.filter((id) => id !== versionId)
+			}
+			return [...prevSelectedVersions, versionId]
+		})
+	}
 
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
 	const [isDragging, setIsDragging] = useState(false)
@@ -242,7 +252,12 @@ const Selector = ({ ctx }: Props) => {
 							<hr className="bg-gray-300" />
 
 							{selectedLibrary?.id ? (
-								<BrowsePhotos library={selectedLibrary} ctx={ctx} />
+								<BrowsePhotos
+									library={selectedLibrary}
+									chooseVersion={handleChooseVersion}
+									selectedVersions={selectedVersions}
+									ctx={ctx}
+								/>
 							) : (
 								<p className="text-center py-10">Please select a library.</p>
 							)}
