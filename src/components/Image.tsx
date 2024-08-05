@@ -41,7 +41,7 @@ const RasterImage = ({
 					'relative group inline-block border-[3px] rounded-lg transition-transform duration-300 ease-in-out hover:scale-[0.98]',
 					selected ? 'border-primary' : 'border-white',
 					thumbnail ? 'cursor-move h-36 w-36' : 'overflow-hidden',
-					{ 'h-full': version }
+					{ 'h-40': version }
 				)}
 			>
 				{thumbnail && (
@@ -51,7 +51,7 @@ const RasterImage = ({
 					src={image.thumbUrl}
 					alt={image?.name}
 					className={clsx(
-						'w-full h-full text-gray-500 rounded transition-transform duration-300 ease-in-out select-none pointer-events-none bg-gray-100 object-cover',
+						'animate-fade-in w-full h-full text-gray-500 rounded transition-transform duration-300 ease-in-out select-none pointer-events-none bg-gray-100 object-cover',
 						thumbnail ? 'h-36 w-36' : 'group-hover:scale-[1.02] min-h-[147px]'
 					)}
 				/>

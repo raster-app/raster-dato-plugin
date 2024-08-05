@@ -123,6 +123,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 								displayName
 								selected={selectedPhotos.some((selected) => selected.id === view.id)}
 								chooseImage={() => handlePhotoClick(view)}
+								version
 							/>
 						)
 					})}

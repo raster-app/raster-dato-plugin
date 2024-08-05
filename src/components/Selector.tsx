@@ -152,7 +152,7 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 				</div>
 
 				{/* Selected images */}
-				<div className="flex flex-col gap-3">
+				<div className="flex flex-col gap-3 w-full">
 					<h3 className="text-xl font-medium pb-3">Selected images ({selectedPhotos.length}):</h3>
 
 					{Boolean(selectedPhotos.length) ? (

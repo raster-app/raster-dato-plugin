@@ -49,7 +49,6 @@ const SelectorField = ({ ctx }: Props) => {
 					</h2>
 					<div className="flex gap-3">
 						<Button
-							type="button"
 							onClick={handleOpenModal}
 							className="w-fit h-fit bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded font-medium transition-colors"
 						>
