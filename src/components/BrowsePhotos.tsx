@@ -1,10 +1,10 @@
-import { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
+import { RenderModalCtx } from 'datocms-plugin-sdk'
 import { useState, useEffect } from 'react'
 import { useSelectedPhotosStore } from '../lib/store/useSelectedPhotosStore'
 import RasterImage from './Image'
 
 type Props = {
-	ctx: RenderFieldExtensionCtx
+	ctx: RenderModalCtx
 	library: Library
 	chooseVersion: (versionId: string) => void
 	selectedVersions: string[]
