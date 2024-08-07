@@ -130,9 +130,11 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 
 	return (
 		<Canvas ctx={ctx}>
-			<div className="flex gap-8">
+			<h2 className="text-2xl font-medium pb-10">Select an image from Raster</h2>
+
+			<div className="flex max-sm:flex-col gap-8">
 				{/* Libraries */}
-				<div className="flex flex-col gap-2 w-full max-w-56 shrink-0">
+				<div className="flex flex-col gap-2 w-full sm:max-w-56 shrink-0">
 					{libraries &&
 						libraries.map((library) => (
 							<button
@@ -152,7 +154,7 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 				</div>
 
 				{/* Selected images */}
-				<div className="flex flex-col gap-3 w-full">
+				<div className="flex flex-col gap-3 w-full max-w-7xl mx-auto">
 					<h3 className="text-xl font-medium pb-3">Selected images ({selectedPhotos.length}):</h3>
 
 					{Boolean(selectedPhotos.length) ? (
@@ -221,7 +223,9 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 							ctx={ctx}
 						/>
 					) : (
-						<p className="text-center py-10">Please select a library.</p>
+						<div className="h-[500px] flex items-center justify-center">
+							<p>Please select a library.</p>
+						</div>
 					)}
 				</div>
 			</div>

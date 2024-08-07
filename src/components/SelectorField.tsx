@@ -18,7 +18,7 @@ const SelectorField = ({ ctx }: Props) => {
 		const result = await ctx.openModal({
 			id: 'selectorModal',
 			title: 'Select an image from Raster',
-			width: 'l',
+			width: 'fullWidth',
 			parameters: {
 				selectedPhotos,
 				formValues: ctx.formValues,
@@ -56,6 +56,7 @@ const SelectorField = ({ ctx }: Props) => {
 						</Button>
 					</div>
 				</div>
+
 				{/* Display thumbnails */}
 				{Boolean(selectedPhotos.length) && (
 					<div className="flex flex-wrap gap-2 mt-3">

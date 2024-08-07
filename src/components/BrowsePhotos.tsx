@@ -14,6 +14,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 	const [photos, setPhotos] = useState<Image[]>([])
 	const [viewsView, setViewsView] = useState(false)
 	const [photoViews, setPhotoViews] = useState<Image[]>([])
+	const [loading, setLoading] = useState(true)
 
 	const [selectedPhotos, setPhoto] = useSelectedPhotosStore((state) => [
 		state.selectedPhotos,
@@ -52,25 +53,32 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 
 	useEffect(() => {
 		const getPhotosFromLibrary = async () => {
-			let results = await fetch('https://apis.raster.app', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization:
-						typeof ctx.plugin.attributes.parameters.apiKey === 'string'
-							? `Bearer ${ctx.plugin.attributes.parameters.apiKey}`
-							: '',
-					'Apollo-Require-Preflight': 'true',
-				},
+			setLoading(true)
+			try {
+				let results = await fetch('https://apis.raster.app', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization:
+							typeof ctx.plugin.attributes.parameters.apiKey === 'string'
+								? `Bearer ${ctx.plugin.attributes.parameters.apiKey}`
+								: '',
+						'Apollo-Require-Preflight': 'true',
+					},
+					body: JSON.stringify(body),
+				})
 
-				body: JSON.stringify(body),
-			})
-
-			const libraryPhotos = await results.json()
-			if (libraryPhotos.data && libraryPhotos.data.photos.length > 0)
-				setPhotos(libraryPhotos.data.photos)
-			else {
+				const libraryPhotos = await results.json()
+				if (libraryPhotos.data && libraryPhotos.data.photos.length > 0)
+					setPhotos(libraryPhotos.data.photos)
+				else {
+					setPhotos([])
+				}
+			} catch (error) {
+				console.error('Failed to fetch photos:', error)
 				setPhotos([])
+			} finally {
+				setLoading(false)
 			}
 		}
 
@@ -93,6 +101,18 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		}
 		setPhoto(media)
 		setViewsView(false)
+	}
+
+	if (loading) {
+		return (
+			<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+				{Array(8)
+					.fill(0)
+					.map((_, index) => (
+						<div key={index} className="w-full h-56 animate-pulse bg-gray-200 rounded-md" />
+					))}
+			</div>
+		)
 	}
 
 	return viewsView ? (
@@ -132,7 +152,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		</div>
 	) : (
 		// All photos for selected library
-		<div className="columns-2 gap-4">
+		<div className="columns-2 md:columns-3 lg:columns-4 gap-4">
 			{photos.map((photo) => {
 				return (
 					<div
