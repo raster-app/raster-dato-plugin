@@ -134,13 +134,15 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 				<div className="flex justify-between w-full">
 					<h2 className="text-2xl font-medium pb-10">Select an image from Raster</h2>
 
-					<button
-						className="w-fit h-fit bg-green hover:bg-green-dark text-white px-3 py-2 rounded font-medium transition-colors"
-						type="button"
-						onClick={() => ctx.resolve(JSON.stringify(selectedPhotos))}
-					>
-						Confirm
-					</button>
+					{selectedPhotos.length > 0 && (
+						<button
+							className="w-fit h-fit bg-green hover:bg-green-dark text-white px-3 py-2 rounded font-medium transition-colors"
+							type="button"
+							onClick={() => ctx.resolve(JSON.stringify(selectedPhotos))}
+						>
+							Confirm
+						</button>
+					)}
 				</div>
 
 				<div className="flex max-sm:flex-col gap-8">
@@ -235,7 +237,7 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 							/>
 						) : (
 							<div className="h-[500px] flex items-center justify-center">
-								<p>Please select a library.</p>
+								Select a library to view 👀 images
 							</div>
 						)}
 					</div>
@@ -245,12 +247,12 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 			{/* Selected images count, cancel and confirm buttons */}
 			<div
 				className={clsx(
-					'w-full flex justify-between bg-white border-t border-gray-200 transition-transform duration-300 ease-in-out',
-					selectedPhotos.length > 0 ? 'translate-y-0' : 'translate-y-full'
+					'w-full flex justify-between bg-white border-t border-gray-200 transition-[opacity,transform] duration-300 ease-in-out',
+					selectedPhotos.length > 0 ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
 				)}
 			>
 				<span className="font-medium py-6 px-7">{selectedPhotos.length} selected</span>
-				<div className="flex gap-3 px-14 pt-4">
+				<div className="flex gap-3 px-7 pt-4">
 					<button
 						className="w-fit h-fit bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded font-medium transition-colors"
 						type="button"
