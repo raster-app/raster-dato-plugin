@@ -105,7 +105,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 
 	if (loading) {
 		return (
-			<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+			<div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
 				{Array(8)
 					.fill(0)
 					.map((_, index) => (
@@ -128,7 +128,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 			<p>The selected image has more than one version, please make a selection below.</p>
 
 			{photoViews && (
-				<div className="columns-2 gap-4">
+				<div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 					{photoViews.map((view: Image, index: number) => {
 						const parent = photos.find((p) => p.id === view.parentId)
 						return (
@@ -152,7 +152,7 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		</div>
 	) : (
 		// All photos for selected library
-		<div className="columns-2 md:columns-3 lg:columns-4 gap-4">
+		<div className="columns-2 lg:columns-3 xl:columns-4 gap-4">
 			{photos.map((photo) => {
 				return (
 					<div

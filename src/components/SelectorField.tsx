@@ -40,7 +40,7 @@ const SelectorField = ({ ctx }: Props) => {
 	return (
 		<Canvas ctx={ctx}>
 			<div className="flex flex-col gap-5 border p-5 rounded-md border-gray-200 mt-3">
-				<div className="flex items-center justify-between gap-5 w-full">
+				<div className="flex justify-between gap-5 w-full">
 					<h2 className="text-2xl font-medium flex flex-col">
 						Select an image from Raster
 						<span className="font-normal text-base text-gray-400">
