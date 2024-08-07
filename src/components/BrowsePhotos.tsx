@@ -155,22 +155,18 @@ export default function BrowsePhotos({ library, ctx }: Props) {
 		<div className="columns-2 lg:columns-3 xl:columns-4 gap-4">
 			{photos.map((photo) => {
 				return (
-					<div
-						key={photo.id}
-						onClick={() =>
+					<RasterImage
+						image={photo}
+						displayName={false}
+						openVersions={showPhotoViews}
+						chooseImage={() =>
 							Boolean(photo.views?.length) ? showPhotoViews(photo) : handlePhotoClick(photo)
 						}
-					>
-						<RasterImage
-							image={photo}
-							displayName={false}
-							openVersions={showPhotoViews}
-							selected={selectedPhotos.some((selected) => selected.id === photo.id)}
-							versionSelected={photo.views?.some((view) =>
-								selectedPhotos.some((selected) => selected.id === view.id)
-							)}
-						/>
-					</div>
+						selected={selectedPhotos.some((selected) => selected.id === photo.id)}
+						versionSelected={photo.views?.some((view) =>
+							selectedPhotos.some((selected) => selected.id === view.id)
+						)}
+					/>
 				)
 			})}
 		</div>

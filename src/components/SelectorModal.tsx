@@ -8,24 +8,15 @@ type Props = {
 }
 
 const SelectorModal = ({ ctx }: Props) => {
-	const [selectedPhotos, setSelectedPhotos] = useState<any[]>(
-		Array.isArray(ctx.parameters.selectedPhotos) ? ctx.parameters.selectedPhotos : []
-	)
+	const [selectedPhotos, setSelectedPhotos] = useState<any>(ctx.parameters.selectedPhotos || [])
 
 	useEffect(() => {
-		if (Array.isArray(ctx.parameters.selectedPhotos)) {
-			setSelectedPhotos(ctx.parameters.selectedPhotos)
-		}
+		setSelectedPhotos(ctx.parameters.selectedPhotos || [])
 	}, [ctx.parameters.selectedPhotos])
-
-	const handleSave = (photos: any[]) => {
-		setSelectedPhotos(photos)
-		ctx.resolve(photos)
-	}
 
 	return (
 		<Canvas ctx={ctx}>
-			<Selector selectedPhotos={selectedPhotos} setSelectedPhotos={handleSave} ctx={ctx} />
+			<Selector selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} ctx={ctx} />
 		</Canvas>
 	)
 }

@@ -8,6 +8,7 @@ import { swrLibreriesFetcher } from '../lib/fetcher'
 import { getLibraryListQuery } from '../lib/graphql/queries'
 import RasterImage from './Image'
 import XMark from './icons/XMark'
+import { arrayMove } from '@dnd-kit/sortable'
 
 import type { DragEndEvent, DragStartEvent, UniqueIdentifier } from '@dnd-kit/core'
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
@@ -29,13 +30,6 @@ interface Library {
 	id: string
 	name: string
 	photosCount: number
-}
-
-function arrayMove<T>(arr: T[], fromIndex: number, toIndex: number): T[] {
-	const element = arr[fromIndex]
-	arr.splice(fromIndex, 1)
-	arr.splice(toIndex, 0, element)
-	return arr
 }
 
 function SortableItem({ id, children, isDragging }: SortableItemProps) {
@@ -138,7 +132,7 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 						<button
 							className="w-fit h-fit bg-green hover:bg-green-dark text-white px-3 py-2 rounded font-medium transition-colors"
 							type="button"
-							onClick={() => ctx.resolve(JSON.stringify(selectedPhotos))}
+							onClick={() => ctx.resolve(selectedPhotos)}
 						>
 							Confirm
 						</button>
@@ -263,7 +257,7 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 					<button
 						className="w-fit h-fit bg-green hover:bg-green-dark text-white px-3 py-2 rounded font-medium transition-colors"
 						type="button"
-						onClick={() => ctx.resolve(JSON.stringify(selectedPhotos))}
+						onClick={() => ctx.resolve(selectedPhotos)}
 					>
 						Confirm
 					</button>

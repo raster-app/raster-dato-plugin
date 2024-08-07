@@ -45,7 +45,7 @@ const RasterImage = ({
 				)}
 			>
 				{thumbnail && (
-					<div className="font-semibold text-white flex items-center justify-center transition-opacity absolute inset-0 group-hover:opacity-100 opacity-0 bg-black/25 h-full w-full rounded" />
+					<div className="z-10 transition-opacity absolute inset-0 group-hover:opacity-100 opacity-0 bg-black/25 h-full w-full rounded" />
 				)}
 				<img
 					src={image.thumbUrl}
