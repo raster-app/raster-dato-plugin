@@ -26,9 +26,8 @@ const SelectorField = ({ ctx }: Props) => {
 			},
 		})
 		if (result) {
-			const parsedResult = JSON.parse(result as string)
-			setInitialValue(parsedResult)
-			ctx.setFieldValue(ctx.fieldPath, parsedResult)
+			setInitialValue(result)
+			ctx.setFieldValue(ctx.fieldPath, result)
 		}
 	}
 

@@ -8,16 +8,14 @@ import { swrLibreriesFetcher } from '../lib/fetcher'
 import { getLibraryListQuery } from '../lib/graphql/queries'
 import RasterImage from './Image'
 import XMark from './icons/XMark'
-import { arrayMove } from '@dnd-kit/sortable'
 
 import type { DragEndEvent, DragStartEvent, UniqueIdentifier } from '@dnd-kit/core'
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { useSelectedPhotosStore } from '../lib/store/useSelectedPhotosStore'
 
 type Props = {
 	ctx: RenderModalCtx
-	selectedPhotos: any[]
-	setSelectedPhotos: (photos: any) => void
 }
 
 interface SortableItemProps {
@@ -54,10 +52,16 @@ function SortableItem({ id, children, isDragging }: SortableItemProps) {
 	)
 }
 
-const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
+const Selector = ({ ctx }: Props) => {
 	const [libraries, setLibraries] = useState<Library[]>([])
 	const [selectedLibrary, setSelectedLibrary] = useState<Library | null>(null)
 	const [selectedVersions, setSelectedVersions] = useState<string[]>([])
+
+	const [selectedPhotos, reorderPhotos, setPhoto] = useSelectedPhotosStore((state) => [
+		state.selectedPhotos,
+		state.reorderPhotos,
+		state.setPhoto,
+	])
 
 	const { orgId, apiKey } = ctx.plugin.attributes.parameters
 
@@ -103,14 +107,7 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 	const handleDragEnd = (event: DragEndEvent) => {
 		setActiveId(null)
 		setIsDragging(false)
-		const { active, over } = event
-		if (active && over && active.id !== over.id) {
-			setSelectedPhotos((items: Image[]) => {
-				const oldIndex = items.findIndex((item) => item.id === active.id)
-				const newIndex = items.findIndex((item) => item.id === over.id)
-				return arrayMove([...items], oldIndex, newIndex)
-			})
-		}
+		reorderPhotos(event)
 	}
 
 	const handleDragStart = (event: DragStartEvent) => {
@@ -132,7 +129,7 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 						<button
 							className="w-fit h-fit bg-green hover:bg-green-dark text-white px-3 py-2 rounded font-medium transition-colors"
 							type="button"
-							onClick={() => ctx.resolve(selectedPhotos)}
+							onClick={() => ctx.resolve(JSON.stringify(selectedPhotos))}
 						>
 							Confirm
 						</button>
@@ -179,14 +176,10 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 											>
 												<button
 													type="button"
-													onClick={() =>
-														setSelectedPhotos((prev: any[]) =>
-															prev.filter((photo) => photo.id !== image.id)
-														)
-													}
+													onClick={() => setPhoto(image)}
 													aria-label="Remove image"
 													className={clsx(
-														'z-10 text-white border-[3px] border-white absolute -top-2.5 -right-2.5 h-8 w-8 flex justify-center items-center bg-primary rounded-full p-1 hover:bg-primary-dark transition-colors',
+														'z-50 text-white border-[3px] border-white absolute -top-2.5 -right-2.5 h-8 w-8 flex justify-center items-center bg-primary rounded-full p-1 hover:bg-primary-dark transition-colors',
 														{ 'opacity-0': isDragging }
 													)}
 												>
@@ -257,7 +250,7 @@ const Selector = ({ ctx, selectedPhotos, setSelectedPhotos }: Props) => {
 					<button
 						className="w-fit h-fit bg-green hover:bg-green-dark text-white px-3 py-2 rounded font-medium transition-colors"
 						type="button"
-						onClick={() => ctx.resolve(selectedPhotos)}
+						onClick={() => ctx.resolve(JSON.stringify(selectedPhotos))}
 					>
 						Confirm
 					</button>

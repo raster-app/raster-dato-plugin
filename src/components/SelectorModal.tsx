@@ -1,22 +1,24 @@
 import { RenderModalCtx } from 'datocms-plugin-sdk'
 import { Canvas } from 'datocms-react-ui'
 import Selector from './Selector'
-import { useState, useEffect } from 'react'
+import { useSelectedPhotosStore } from '../lib/store/useSelectedPhotosStore'
+import { useEffect } from 'react'
 
 type Props = {
 	ctx: RenderModalCtx
 }
 
 const SelectorModal = ({ ctx }: Props) => {
-	const [selectedPhotos, setSelectedPhotos] = useState<any>(ctx.parameters.selectedPhotos || [])
+	const [setInitialValue] = useSelectedPhotosStore((state) => [state.setInitialValue])
 
 	useEffect(() => {
-		setSelectedPhotos(ctx.parameters.selectedPhotos || [])
-	}, [ctx.parameters.selectedPhotos])
+		const { selectedPhotos: initialValue } = ctx.parameters ?? {}
+		setInitialValue(initialValue)
+	}, [ctx.parameters, setInitialValue])
 
 	return (
 		<Canvas ctx={ctx}>
-			<Selector selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} ctx={ctx} />
+			<Selector ctx={ctx} />
 		</Canvas>
 	)
 }

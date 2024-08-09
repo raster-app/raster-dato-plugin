@@ -28,7 +28,7 @@ export const useSelectedPhotosStore = create<SelectedPhotos>()((set, get) => {
 			set({ selectedPhotos: JSON.parse(initialValue) as Image[] })
 			return
 		}
-		set({ selectedPhotos: [] })
+		set({ selectedPhotos: initialValue as Image[] })
 	}
 
 	const reorderPhotos = (event: DragEndEvent) => {
