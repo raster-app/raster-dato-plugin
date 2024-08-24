@@ -1,5 +1,5 @@
 {
-	"name": "raster-dato-plugin",
+	"name": "@raster-app/raster-dato-plugin",
 	"version": "0.1.0",
 	"author": "Raster <hello@raster.app>",
 	"license": "MIT",
