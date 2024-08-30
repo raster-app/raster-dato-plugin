@@ -1,6 +1,6 @@
 {
-	"name": "@raster-app/raster-dato-plugin",
-	"version": "0.1.0",
+	"name": "@raster-app/datocms-plugin-raster",
+	"version": "0.1.2",
 	"author": "Raster <hello@raster.app>",
 	"license": "MIT",
 	"description": "A DatoCMS plugin for Raster, a digital asset manager for modern teams, saving time organizing, editing, and hosting photography.",
@@ -15,6 +15,15 @@
 		"dam",
 		"digital-asset-management"
 	],
+	"datoCmsPlugin": {
+		"title": "Raster",
+		"coverImage": "docs/cover.png",
+		"previewImage": "docs/preview.png",
+		"entryPoint": "build/index.html",
+		"permissions": [
+			"currentUserAccessToken"
+		]
+	},
 	"scripts": {
 		"start": "cross-env BROWSER='none' PUBLIC_URL='/' react-scripts start",
 		"build": "cross-env PUBLIC_URL='.' react-scripts build",
@@ -64,12 +73,6 @@
 		"cross-env": "^7.0.3",
 		"postcss": "^8.4.40",
 		"tailwindcss": "^3.4.7"
-	},
-	"datoCmsPlugin": {
-		"title": "Raster DatoCMS Plugin",
-		"coverImage": "docs/cover.png",
-		"previewImage": "docs/preview.png",
-		"entryPoint": "build/index.html"
 	},
 	"prettier": "@monogram/prettier-config"
 }
