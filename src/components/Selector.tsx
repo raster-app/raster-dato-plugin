@@ -4,8 +4,8 @@ import clsx from 'clsx'
 import {
 	RasterLibraries,
 	RasterPreview,
-	useSelectedImages,
 	RasterImages,
+	useSelectedImages,
 } from '@raster-app/raster-toolkit'
 
 type Props = {
@@ -42,13 +42,13 @@ const Selector = ({ ctx }: Props) => {
 
 				<div className="flex max-sm:flex-col gap-8">
 					{/* Libraries */}
-					<RasterLibraries config={{ orgId, apiKey }} initialValue={initialValue} />
+					<RasterLibraries config={{ orgId, apiKey }} />
 
 					{/* Selected images */}
 					<div className="flex flex-col gap-3 w-full max-w-7xl mx-auto">
 						<RasterPreview config={{ orgId, apiKey }} initialValue={initialValue} />
 						<hr className="bg-gray-300 mb-3" />
-						<RasterImages config={{ orgId, apiKey }} initialValue={initialValue} />
+						<RasterImages config={{ orgId, apiKey }} />
 					</div>
 				</div>
 			</Canvas>
