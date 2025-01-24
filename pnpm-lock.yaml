@@ -15,8 +15,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0(@dnd-kit/core@6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@raster-app/raster-toolkit':
-        specifier: 0.0.5
-        version: 0.0.5(@types/react@18.3.5)(immer@9.0.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 0.0.6
+        version: 0.0.6(@types/react@18.3.5)(immer@9.0.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/node':
         specifier: ^18.11.18
         version: 18.19.50
@@ -1227,8 +1227,8 @@ packages:
       webpack-plugin-serve:
         optional: true
 
-  '@raster-app/raster-toolkit@0.0.5':
-    resolution: {integrity: sha512-zU6kP59zdTMgjsKBGY1nCspVV/sOkcioyMSgTWlxZg4YaiRt09NGYGnE9VgObt3HBsZo7f/Y7KcrqLbRP+6avw==}
+  '@raster-app/raster-toolkit@0.0.6':
+    resolution: {integrity: sha512-u+phJtjcAFQOir6DD/B0OKVhf202euW5VpO5TeyZUroXJWzz1DN02S0erU6kJk1jXi/ZxeI+IUwi7UOrs13+7g==}
     peerDependencies:
       react: ^18
       react-dom: ^18
@@ -7312,7 +7312,7 @@ snapshots:
       type-fest: 0.21.3
       webpack-dev-server: 4.15.2(webpack@5.94.0)
 
-  '@raster-app/raster-toolkit@0.0.5(@types/react@18.3.5)(immer@9.0.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@raster-app/raster-toolkit@0.0.6(@types/react@18.3.5)(immer@9.0.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@dnd-kit/core': 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@dnd-kit/sortable': 8.0.0(@dnd-kit/core@6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
