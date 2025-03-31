@@ -13,7 +13,7 @@ const SelectorField = ({ ctx }: Props) => {
 	const handleOpenModal = async () => {
 		const result = await ctx.openModal({
 			id: 'selectorModal',
-			title: 'Select an image from Raster',
+			title: 'Select an asset from Raster',
 			width: 'fullWidth',
 			parameters: {
 				selectedPhotos: initialValueJSON,
@@ -38,12 +38,16 @@ const SelectorField = ({ ctx }: Props) => {
 		ctx.setFieldValue(ctx.fieldPath, newImagesJSON)
 	}
 
+	const isVideo = (image: any) => {
+		return !image.height && !image.width
+	}
+
 	return (
 		<Canvas ctx={ctx}>
 			<div className="flex flex-col gap-5 border p-5 rounded-md border-gray-200 mt-3">
 				<div className="flex justify-between gap-5 w-full">
 					<h2 className="text-2xl font-medium flex flex-col">
-						Select an image from Raster
+						Select an asset from Raster
 						{Boolean(initialValue?.length) && (
 							<span className="font-normal text-base text-gray-400">
 								{initialValue?.length} selected
@@ -55,7 +59,7 @@ const SelectorField = ({ ctx }: Props) => {
 							onClick={handleOpenModal}
 							className="w-fit h-fit bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded font-medium transition-colors min-w-36"
 						>
-							{Boolean(initialValue?.length) ? 'Edit selection' : 'Select images'}
+							{Boolean(initialValue?.length) ? 'Edit selection' : 'Select assets'}
 						</Button>
 						{Boolean(initialValue?.length) && (
 							<Button
@@ -71,26 +75,37 @@ const SelectorField = ({ ctx }: Props) => {
 				{/* Display thumbnails */}
 				{Boolean(initialValue?.length) && (
 					<div className="flex flex-wrap gap-2 mt-3">
-						{initialValue?.map((image: any) => (
-							<div key={image.id} className="relative">
-								<img
-									src={image.thumbUrl}
-									height={112}
-									width={112}
-									alt={image.id}
-									className="object-cover h-28 w-28 rounded-md"
-								/>
-								<button
-									type="button"
-									onClick={() => handleRemoveImage(image.id)}
-									className="absolute -top-2 -right-2 w-6 h-6 text-white cursor-pointer bg-red-500 rounded-full p-1 z-50 border-[3px] border-white flex justify-center items-center bg-primary hover:bg-primary-dark transition-colors"
-								>
-									<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-										<path d="M4 12L12 4M4 4l8 8" strokeLinecap="round" strokeLinejoin="round" />
-									</svg>
-								</button>
-							</div>
-						))}
+						{initialValue?.map((image: any) => {
+							return (
+								<div key={image.id} className="relative">
+									{isVideo(image) ? (
+										<video
+											src={image.url}
+											height={112}
+											width={112}
+											className="object-cover h-28 w-28 rounded-md"
+										/>
+									) : (
+										<img
+											src={image.thumbUrl}
+											height={112}
+											width={112}
+											alt={image.id}
+											className="object-cover h-28 w-28 rounded-md"
+										/>
+									)}
+									<button
+										type="button"
+										onClick={() => handleRemoveImage(image.id)}
+										className="absolute -top-2 -right-2 w-6 h-6 text-white cursor-pointer bg-red-500 rounded-full p-1 z-50 border-[3px] border-white flex justify-center items-center bg-primary hover:bg-primary-dark transition-colors"
+									>
+										<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+											<path d="M4 12L12 4M4 4l8 8" strokeLinecap="round" strokeLinejoin="round" />
+										</svg>
+									</button>
+								</div>
+							)
+						})}
 					</div>
 				)}
 			</div>

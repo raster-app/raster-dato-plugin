@@ -1,5 +1,5 @@
 import { RenderConfigScreenCtx } from 'datocms-plugin-sdk'
-import { Canvas, ContextInspector, TextField, Button } from 'datocms-react-ui'
+import { Canvas, TextField, Button } from 'datocms-react-ui'
 import s from './styles.module.css'
 import { useState } from 'react'
 
@@ -65,8 +65,6 @@ export default function ConfigScreen({ ctx }: Props) {
 						</Button>
 					</div>
 				</form>
-
-				<ContextInspector />
 			</div>
 		</Canvas>
 	)
