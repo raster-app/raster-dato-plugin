@@ -1,5 +1,6 @@
 import { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { Canvas, Button } from 'datocms-react-ui'
+import { getThumbUrl, getBlurhashPlaceholder } from '@raster-app/raster-toolkit'
 import get from 'lodash/get'
 
 type Props = {
@@ -76,6 +77,16 @@ const SelectorField = ({ ctx }: Props) => {
 				{Boolean(initialValue?.length) && (
 					<div className="flex flex-wrap gap-2 mt-3">
 						{initialValue?.map((image: any) => {
+							// Progressive load: real thumbnail is a smaller rendition (sizes)
+							// or the full url; the decoded blurhash paints beneath it.
+							const blurhashUrl = getBlurhashPlaceholder(image)
+							const blurhashStyle = blurhashUrl
+								? {
+										backgroundImage: `url(${blurhashUrl})`,
+										backgroundSize: 'cover' as const,
+										backgroundPosition: 'center' as const,
+									}
+								: undefined
 							return (
 								<div key={image.id} className="relative">
 									{isVideo(image) ? (
@@ -87,7 +98,8 @@ const SelectorField = ({ ctx }: Props) => {
 										/>
 									) : (
 										<img
-											src={image.thumbUrl}
+											src={getThumbUrl(image)}
+											style={blurhashStyle}
 											height={112}
 											width={112}
 											alt={image.id}
