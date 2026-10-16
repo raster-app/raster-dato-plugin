@@ -75,8 +75,9 @@ pnpm install
 pnpm dev
 ```
 
-In a DatoCMS project, open **Configuration > Plugins > Add new > Create a new plugin**, and
-enter `http://localhost:5173` as the entry point URL. To check a change:
+In a sandbox environment of a DatoCMS project with the plugin installed, open the plugin's
+**Developer zone** and set the entry point URL to `http://localhost:5173`; use Chrome or Firefox,
+since Safari blocks the insecure iframe. To check a change:
 
 ```bash
 pnpm typecheck
@@ -84,9 +85,14 @@ pnpm lint
 pnpm build
 ```
 
-`pnpm build` writes the plugin to `dist/`, which `datoCmsPlugin.entryPoint` points at. It is
-not committed: DatoCMS loads the plugin from the published npm package, and `prepublishOnly`
-builds it.
+`pnpm build` type-checks and writes the plugin to `dist/`, which `datoCmsPlugin.entryPoint`
+points at. It is not committed: DatoCMS loads the plugin from the published npm package, and
+`prepublishOnly` builds it.
+
+To release, publish a canary first with `npm publish --tag next`, install it in a sandbox
+environment with **Upgrade to canary release** in the plugin's Developer zone, and run the
+manual test. Then tag it `latest`; DatoCMS lists the version and notifies projects within an
+hour.
 
 ### Manual test
 

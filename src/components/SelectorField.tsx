@@ -23,9 +23,11 @@ import {
 import { Picker } from './Picker'
 import s from './styles.module.css'
 
-function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove: () => void }) {
+/** Without `onRemove`, as when the field is disabled, it can't be moved or removed. */
+function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove?: () => void }) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: asset.id,
+		disabled: onRemove === undefined,
 	})
 	const blurhash = getBlurhashPlaceholder(asset)
 
@@ -51,9 +53,11 @@ function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove: () => vo
 					style={blurhash ? { backgroundImage: `url(${blurhash})` } : undefined}
 				/>
 			)}
-			<button type="button" className={s.remove} aria-label="Remove" onClick={onRemove}>
-				×
-			</button>
+			{onRemove && (
+				<button type="button" className={s.remove} aria-label="Remove" onClick={onRemove}>
+					×
+				</button>
+			)}
 		</div>
 	)
 }
@@ -102,7 +106,11 @@ export default function SelectorField({ ctx }: { ctx: RenderFieldExtensionCtx })
 									<Thumbnail
 										key={asset.id}
 										asset={asset}
-										onRemove={() => setAssets(assets.filter((other) => other.id !== asset.id))}
+										onRemove={
+											ctx.disabled
+												? undefined
+												: () => setAssets(assets.filter((other) => other.id !== asset.id))
+										}
 									/>
 								))}
 							</div>
@@ -110,21 +118,23 @@ export default function SelectorField({ ctx }: { ctx: RenderFieldExtensionCtx })
 					</DndContext>
 				)}
 
-				<div className={s.actions}>
-					<Button buttonSize="s" onClick={() => setBrowsing(!browsing)}>
-						{browsing ? 'Close Raster' : 'Browse Raster'}
-					</Button>
-					<Button buttonSize="s" onClick={handleOpenModal}>
-						Open full screen
-					</Button>
-					{assets.length > 0 && (
-						<Button buttonSize="s" buttonType="negative" onClick={() => setAssets([])}>
-							Clear selection
+				{!ctx.disabled && (
+					<div className={s.actions}>
+						<Button buttonSize="s" onClick={() => setBrowsing(!browsing)}>
+							{browsing ? 'Close Raster' : 'Browse Raster'}
 						</Button>
-					)}
-				</div>
+						<Button buttonSize="s" onClick={handleOpenModal}>
+							Open full screen
+						</Button>
+						{assets.length > 0 && (
+							<Button buttonSize="s" buttonType="negative" onClick={() => setAssets([])}>
+								Clear selection
+							</Button>
+						)}
+					</div>
+				)}
 
-				{browsing && (
+				{browsing && !ctx.disabled && (
 					<Picker
 						ctx={ctx}
 						height={560}
