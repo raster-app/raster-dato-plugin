@@ -56,15 +56,3 @@
 .footer > span {
 	margin-right: auto;
 }
-
-.center {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: var(--spacing-s);
-	padding: var(--spacing-xl);
-}
-
-.error {
-	color: var(--alert-color);
-}

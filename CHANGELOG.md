@@ -3,7 +3,7 @@
 ## 1.0.0
 
 A rewrite on Raster's drop-in picker, [`@raster-app/react`](https://www.npmjs.com/package/@raster-app/react)
-`0.1.0` ([SDK docs](https://raster.app/docs/api/sdk)). Editors sign in to Raster from the field
+`0.2.0` ([SDK docs](https://raster.app/docs/api/sdk)). Editors sign in to Raster from the field
 instead of the plugin needing an API key.
 
 ### New
@@ -12,6 +12,9 @@ instead of the plugin needing an API key.
   browser.
 - **The picker**, inside the field and full screen in a modal: an organization switcher, search
   across an organization or one library, an asset's versions, and uploads.
+- **An API key for everyone**, saved once in the plugin settings, connects editors without
+  signing in. It is checked against the pinned organization before it is saved, and kept in
+  memory only in editors' browsers, so a rotated key takes effect on the next load.
 - **Reorder and remove** picked assets by dragging and clicking **×** in the field.
 
 ### Breaking changes

@@ -15,8 +15,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
       '@raster-app/react':
-        specifier: 0.1.0
-        version: 0.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: 0.2.0
+        version: 0.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       datocms-plugin-sdk:
         specifier: ^2.5.0
         version: 2.5.0
@@ -265,14 +265,14 @@ packages:
   '@oxc-project/types@0.153.0':
     resolution: {integrity: sha512-jSNrRIyvPVLL5E1z/tS5zLAprosGz/FuI1PWwEOz59j3E4TTTzSpqKb/RDGqJhhW0QHYISGXxq582wGx6T11Tw==}
 
-  '@raster-app/react@0.1.0':
-    resolution: {integrity: sha512-NraBo/Fg2Daj26F6wfwkAhWIZyfbT22cdW1JC3i58wzmotqTxAY02HvoYz/R58gD/84GlmP2Ve5fp7zzWZKYBw==}
+  '@raster-app/react@0.2.0':
+    resolution: {integrity: sha512-L5RYVlmJf+Md8GtE7vke+aUdUspffQIH0gei0VZ73IJ9sP3Z/3qMHrR3NcQekSVNpiDFOyHvVdOYXPGIdObWog==}
     engines: {node: '>=22.12'}
     peerDependencies:
       react: ^18 || ^19
 
-  '@raster-app/sdk@0.1.0':
-    resolution: {integrity: sha512-pCuAKoHHoISfmtXt8pGtDd78h3+idQo0M7fWqteF38Np3ABjx0j389LlvJExeVMLa382BcLC0evaAcxqrnfVpQ==}
+  '@raster-app/sdk@0.2.0':
+    resolution: {integrity: sha512-a9G6C6FSERQAmVRpUsjUmDRrioSxpQUGV4nwLk/cFT+/W/DUGrG8ES317IN3xAOUUFXElb6jLcoiOwR4VCm9Xg==}
     engines: {node: '>=22.12'}
 
   '@rolldown/binding-android-arm-eabi@1.2.13':
@@ -1057,16 +1057,16 @@ snapshots:
 
   '@oxc-project/types@0.153.0': {}
 
-  '@raster-app/react@0.1.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@raster-app/react@0.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
-      '@raster-app/sdk': 0.1.0
+      '@raster-app/sdk': 0.2.0
       '@tanstack/react-query': 5.104.1(react@19.3.0)
       '@tanstack/react-virtual': 3.14.13(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
-  '@raster-app/sdk@0.1.0': {}
+  '@raster-app/sdk@0.2.0': {}
 
   '@rolldown/binding-android-arm-eabi@1.2.13':
     optional: true
