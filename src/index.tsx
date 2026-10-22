@@ -1,9 +1,9 @@
-import { connect } from 'datocms-plugin-sdk'
-import 'datocms-react-ui/styles.css'
-import SelectorField from './components/SelectorField'
-import SelectorModal from './components/SelectorModal'
-import ConfigScreen from './entrypoints/ConfigScreen'
+import { RenderFieldExtensionCtx, RenderModalCtx, connect } from 'datocms-plugin-sdk'
 import { render } from './utils/render'
+import ConfigScreen from './entrypoints/ConfigScreen'
+import 'datocms-react-ui/styles.css'
+import SelectorModal from './components/SelectorModal'
+import SelectorField from './components/SelectorField'
 
 connect({
 	manualFieldExtensions() {
@@ -16,13 +16,21 @@ connect({
 			},
 		]
 	},
-	renderFieldExtension(fieldExtensionId, ctx) {
-		if (fieldExtensionId === 'raster') render(<SelectorField ctx={ctx} />)
-	},
-	renderModal(modalId, ctx) {
-		if (modalId === 'selectorModal') render(<SelectorModal ctx={ctx} />)
+	renderFieldExtension(fieldExtensionId: string, ctx: RenderFieldExtensionCtx) {
+		switch (fieldExtensionId) {
+			case 'raster':
+				return render(<SelectorField ctx={ctx} />)
+			default:
+				return null
+		}
 	},
 	renderConfigScreen(ctx) {
-		render(<ConfigScreen ctx={ctx} />)
+		return render(<ConfigScreen ctx={ctx} />)
+	},
+	renderModal(modalId: string, ctx: RenderModalCtx) {
+		switch (modalId) {
+			case 'selectorModal':
+				return render(<SelectorModal ctx={ctx} />)
+		}
 	},
 })

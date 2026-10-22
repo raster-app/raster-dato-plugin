@@ -1,7 +1,7 @@
 import { type Asset, RasterPicker, RasterProvider } from '@raster-app/react'
 import '@raster-app/react/styles.css'
 import type { RenderFieldExtensionCtx, RenderModalCtx } from 'datocms-plugin-sdk'
-import { getRasterClient, rasterScope, readParameters } from '../client'
+import { getRasterClient, readParameters } from '../client'
 
 /** Raster's picker, signed in with the project's client, `height` tall. */
 export function Picker({
@@ -14,8 +14,7 @@ export function Picker({
 	onPick: (asset: Asset) => void
 }) {
 	const { orgId, apiKey } = readParameters(ctx.plugin.attributes.parameters)
-	const scope = rasterScope(ctx.site.id, orgId)
-	const { client, state } = getRasterClient(scope)
+	const { scope, client, state } = getRasterClient(ctx.site.id, orgId)
 
 	return (
 		// The provider keeps the client it mounted with, so another scope remounts it.

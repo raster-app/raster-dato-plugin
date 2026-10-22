@@ -30,23 +30,23 @@ export function readParameters(parameters: Record<string, unknown> | null): Plug
 	return { ...(orgId && { orgId }), ...(apiKey && { apiKey }) }
 }
 
-/**
- * What a project's Raster sign-in and browsing state are kept under. The pinned organization
- * is in it, so pinning, or changing the pin, asks editors to sign in again.
- */
-export function rasterScope(siteId: string, orgId: string | undefined): string {
-	const scope = `raster.${siteId}`
-	return orgId === undefined ? scope : `${scope}.org.${orgId}`
-}
-
 // DatoCMS renders again on every change to the form, so the client outlives a render.
-const clients = new Map<string, { client: RasterClient; state: StateStore }>()
+const clients = new Map<string, ReturnType<typeof getRasterClient>>()
 
-export function getRasterClient(scope: string): { client: RasterClient; state: StateStore } {
+/**
+ * The project's client, and the scope its sign-in and browsing state are kept under. The pinned
+ * organization is in the scope, so pinning, or changing the pin, asks editors to sign in again.
+ */
+export function getRasterClient(
+	siteId: string,
+	orgId: string | undefined
+): { scope: string; client: RasterClient; state: StateStore } {
+	const scope = orgId === undefined ? `raster.${siteId}` : `raster.${siteId}.org.${orgId}`
 	const existing = clients.get(scope)
 	if (existing !== undefined) return existing
 
 	const created = {
+		scope,
 		client: createRasterClient({
 			host: HOST,
 			credentials: localStorageCredentialStore(`${scope}.credentials`),

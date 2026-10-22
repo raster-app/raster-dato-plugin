@@ -12,14 +12,7 @@ import { getBlurhashPlaceholder, getThumbUrl } from '@raster-app/react'
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { Button, Canvas } from 'datocms-react-ui'
 import get from 'lodash/get'
-import {
-	addStoredAssets,
-	isVideo,
-	parseStoredAssets,
-	type StoredAsset,
-	serializeStoredAssets,
-	toStoredAsset,
-} from '../stored-asset'
+import { addStoredAssets, type StoredAsset, toStoredAsset } from '../stored-asset'
 import { Picker } from './Picker'
 import s from './styles.module.css'
 
@@ -43,7 +36,8 @@ function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove?: () => v
 			{...attributes}
 			{...listeners}
 		>
-			{isVideo(asset) ? (
+			{/* 0.x stored videos without dimensions; one picked since has them, and a video file name. */}
+			{(!asset.width && !asset.height) || /\.(mp4|m4v|mov|webm|ogv)$/i.test(asset.url ?? '') ? (
 				<video src={asset.url ?? undefined} className={s.media} muted />
 			) : (
 				<img
@@ -68,10 +62,12 @@ export default function SelectorField({ ctx }: { ctx: RenderFieldExtensionCtx })
 	// A click on a thumbnail's remove button isn't a drag.
 	const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
-	const assets = parseStoredAssets(get(ctx.formValues, ctx.fieldPath))
+	// The field stores a JSON string of `StoredAsset[]`, or null when empty.
+	const value = get(ctx.formValues, ctx.fieldPath)
+	const assets: StoredAsset[] = typeof value === 'string' && value !== '' ? JSON.parse(value) : []
 
 	function setAssets(next: StoredAsset[]) {
-		ctx.setFieldValue(ctx.fieldPath, serializeStoredAssets(next))
+		ctx.setFieldValue(ctx.fieldPath, next.length === 0 ? null : JSON.stringify(next))
 	}
 
 	function handleDragEnd({ active, over }: DragEndEvent) {
