@@ -10,7 +10,7 @@ instead of the plugin needing an API key.
 
 - **Sign in from the field** with Raster's device sign-in. The session is remembered per
   browser.
-- **The picker**, inside the field and full screen in a modal: an organization switcher, search
+- **The picker**, full screen from the field: an organization switcher, search
   across an organization or one library, an asset's versions, and uploads.
 - **An API key for everyone**, saved once in the plugin settings, connects editors without
   signing in. It is checked against the pinned organization before it is saved, and kept in

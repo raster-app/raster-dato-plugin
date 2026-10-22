@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
 	closestCenter,
 	DndContext,
@@ -12,8 +11,7 @@ import { getBlurhashPlaceholder, getThumbUrl } from '@raster-app/react'
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { Button, Canvas } from 'datocms-react-ui'
 import get from 'lodash/get'
-import { addStoredAssets, type StoredAsset, toStoredAsset } from '../stored-asset'
-import { Picker } from './Picker'
+import { addStoredAssets, type StoredAsset } from '../stored-asset'
 import s from './styles.module.css'
 
 /** Without `onRemove`, as when the field is disabled, it can't be moved or removed. */
@@ -56,9 +54,8 @@ function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove?: () => v
 	)
 }
 
-/** The field: its picked assets, in order, and the picker to add more. */
+/** The field: its picked assets, in order, and a button that opens the picker to add more. */
 export default function SelectorField({ ctx }: { ctx: RenderFieldExtensionCtx }) {
-	const [browsing, setBrowsing] = useState(false)
 	// A click on a thumbnail's remove button isn't a drag.
 	const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
@@ -116,11 +113,8 @@ export default function SelectorField({ ctx }: { ctx: RenderFieldExtensionCtx })
 
 				{!ctx.disabled && (
 					<div className={s.actions}>
-						<Button buttonSize="s" onClick={() => setBrowsing(!browsing)}>
-							{browsing ? 'Close Raster' : 'Browse Raster'}
-						</Button>
 						<Button buttonSize="s" onClick={handleOpenModal}>
-							Open full screen
+							Browse Raster
 						</Button>
 						{assets.length > 0 && (
 							<Button buttonSize="s" buttonType="negative" onClick={() => setAssets([])}>
@@ -128,14 +122,6 @@ export default function SelectorField({ ctx }: { ctx: RenderFieldExtensionCtx })
 							</Button>
 						)}
 					</div>
-				)}
-
-				{browsing && !ctx.disabled && (
-					<Picker
-						ctx={ctx}
-						height={560}
-						onPick={(asset) => setAssets(addStoredAssets(assets, [toStoredAsset(asset)]))}
-					/>
 				)}
 			</div>
 		</Canvas>

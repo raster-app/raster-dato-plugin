@@ -36,8 +36,8 @@ the key. Use a key with Read access to only the libraries the project needs.
 
 ## What you can do
 
-- **Pick assets into a field.** **Browse Raster** opens the picker inside the field; **Open
-  full screen** opens it in a modal, where you pick several and click **Add to field**.
+- **Pick assets into a field.** **Browse Raster** opens the picker full screen, where you pick
+  one or several and click **Add to field**.
 - **Browse, search and upload.** Switch organizations and libraries, search an organization or
   one library, open an asset's versions, and upload by button or drag-and-drop.
 - **Order and remove.** Drag thumbnails to reorder them, or click **×** to remove one.
@@ -99,8 +99,8 @@ hour.
 In a DatoCMS project with the plugin installed from its built entry:
 
 - [ ] With no settings, **Browse Raster** shows the sign-in; signing in lists your libraries.
-- [ ] Pick an asset in the field; it appears as a thumbnail and the record saves.
-- [ ] **Open full screen**, pick two assets, **Add to field**; both are appended.
+- [ ] **Browse Raster**, pick two assets, **Add to field**; both appear as thumbnails and the
+      record saves.
 - [ ] Drag a thumbnail to reorder, and remove one with **×**; the record saves the new order.
 - [ ] A record saved with 0.1.12 still shows its thumbnails, videos included.
 - [ ] Search finds an asset by name, in the organization and in one library.

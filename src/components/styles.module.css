@@ -50,9 +50,20 @@
 
 .footer {
 	justify-content: flex-end;
-	padding-top: var(--spacing-m);
+	padding: var(--spacing-m);
 }
 
 .footer > span {
 	margin-right: auto;
+}
+
+.modal {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.picker {
+	flex: 1;
+	min-height: 0;
 }

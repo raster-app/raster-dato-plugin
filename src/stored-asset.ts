@@ -8,7 +8,7 @@ export type StoredAsset = Pick<
 	Asset,
 	'id' | 'blurhash' | 'sizes' | 'url' | 'name' | 'height' | 'width' | 'description'
 > & {
-	views: Pick<AssetVariant, 'id' | 'parentId' | 'name' | 'url' | 'sizes' | 'height' | 'width'>[] | null
+	views: Pick<AssetVariant, 'id' | 'parentId' | 'name' | 'url' | 'sizes' | 'height' | 'width'>[]
 }
 
 export function toStoredAsset(asset: Asset): StoredAsset {
@@ -24,7 +24,7 @@ export function toStoredAsset(asset: Asset): StoredAsset {
 				sizes,
 				height,
 				width,
-			})) ?? null
+			})) ?? []
 	return { id, blurhash, sizes, url, name, height, width, views, description }
 }
 
