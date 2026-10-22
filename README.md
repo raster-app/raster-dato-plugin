@@ -55,13 +55,15 @@ The field stores a JSON array, one entry per asset:
 		"height": 2000,
 		"width": 3000,
 		"views": [],
-		"description": null
+		"description": null,
+		"contentType": "image/jpeg"
 	}
 ]
 ```
 
 `url` is the full-size file on Raster's CDN; `sizes` is a JSON string of smaller sizes by their
-longest edge; `views` are the asset's variants.
+longest edge; `views` are the asset's variants; `contentType` tells a video from an image. Assets
+picked with 0.x have no `contentType`, and stored videos with `null` dimensions.
 
 ## Upgrade from 0.x
 

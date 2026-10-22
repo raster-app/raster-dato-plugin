@@ -34,8 +34,8 @@ function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove?: () => v
 			{...attributes}
 			{...listeners}
 		>
-			{/* 0.x stored videos without dimensions; one picked since has them, and a video file name. */}
-			{(!asset.width && !asset.height) || /\.(mp4|m4v|mov|webm|ogv)$/i.test(asset.url ?? '') ? (
+			{/* 0.x stored videos without dimensions; one picked since has them and a poster in `sizes`. */}
+			{!asset.width && !asset.height ? (
 				<video src={asset.url ?? undefined} className={s.media} muted />
 			) : (
 				<img

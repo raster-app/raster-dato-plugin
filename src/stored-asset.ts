@@ -2,17 +2,18 @@ import type { Asset, AssetVariant } from '@raster-app/react'
 
 /**
  * One picked asset as the field stores it: the keys, in the order, that 0.x wrote, so records
- * saved before 1.0 and the sites reading them keep working.
+ * saved before 1.0 and the sites reading them keep working, then `contentType`, which 0.x
+ * records lack.
  */
 export type StoredAsset = Pick<
 	Asset,
-	'id' | 'blurhash' | 'sizes' | 'url' | 'name' | 'height' | 'width' | 'description'
+	'id' | 'blurhash' | 'sizes' | 'url' | 'name' | 'height' | 'width' | 'description' | 'contentType'
 > & {
 	views: Pick<AssetVariant, 'id' | 'parentId' | 'name' | 'url' | 'sizes' | 'height' | 'width'>[]
 }
 
 export function toStoredAsset(asset: Asset): StoredAsset {
-	const { id, blurhash, sizes, url, name, height, width, variants, description } = asset
+	const { id, blurhash, sizes, url, name, height, width, variants, description, contentType } = asset
 	const views =
 		variants
 			?.filter((variant) => variant !== null)
@@ -25,7 +26,7 @@ export function toStoredAsset(asset: Asset): StoredAsset {
 				height,
 				width,
 			})) ?? []
-	return { id, blurhash, sizes, url, name, height, width, views, description }
+	return { id, blurhash, sizes, url, name, height, width, views, description, contentType }
 }
 
 /** Appends picks not already in the list. */

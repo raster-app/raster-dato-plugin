@@ -24,7 +24,8 @@ instead of the plugin needing an API key.
 - **The organization is optional.** When set, it now also limits which organization editors can
   sign in to.
 - **Videos picked from 1.0 have `width` and `height`.** 0.x stored them as `null`, which some
-  sites used to tell a video from an image; use the file extension of `url` instead.
+  sites used to tell a video from an image. Each asset picked from 1.0 also stores
+  `contentType`, such as `video/mp4`; branch on that instead.
 - **The built plugin moved from `build/` to `dist/`**, and is no longer committed. A private
   install that pointed at a URL inside `build/` must point at `dist/index.html`.
 - **`@raster-app/raster-toolkit` is no longer used.**
@@ -34,6 +35,8 @@ instead of the plugin needing an API key.
 1. In **Configuration > Plugins**, upgrade Raster to 1.0.0.
 2. Optionally, open the plugin's settings: clear **Organization** to let editors use any
    organization, or remove the saved key to have editors sign in themselves.
-3. If your site tells videos apart by missing dimensions, check the `url` extension instead.
+3. If your site tells videos apart by missing dimensions, check `contentType` first, and fall
+   back to missing dimensions for assets picked with 0.x, which have no `contentType`.
 
-Records need no changes. The field still stores the same JSON array with the same keys.
+Records need no changes. The field still stores the same JSON array with the same keys, plus
+`contentType` on assets picked from 1.0.
