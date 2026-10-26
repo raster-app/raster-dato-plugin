@@ -1,12 +1,4 @@
-import {
-	connectSharedApiKey,
-	createRasterClient,
-	localStorageCredentialStore,
-	localStorageStateStore,
-	memoryCredentialStore,
-	type RasterClient,
-	type StateStore,
-} from '@raster-app/react'
+import { scopedRaster } from '@raster-app/react'
 
 const HOST = {
 	/** What Raster's consent page, Connected apps and the sign-in screen call this host. */
@@ -30,35 +22,12 @@ export function readParameters(parameters: Record<string, unknown> | null): Plug
 	return { ...(orgId && { orgId }), ...(apiKey && { apiKey }) }
 }
 
-// DatoCMS renders again on every change to the form, so the client outlives a render.
-const clients = new Map<string, ReturnType<typeof getRasterClient>>()
-
 /**
- * The project's client, and the scope its sign-in and browsing state are kept under. The pinned
- * organization is in the scope, so pinning, or changing the pin, asks editors to sign in again.
+ * The project's Raster client, and the scope its sign-in and browsing state are kept under. The
+ * pinned organization is in the scope, so pinning, or changing the pin, asks editors to sign in
+ * again.
  */
-export function getRasterClient(
-	siteId: string,
-	orgId: string | undefined
-): { scope: string; client: RasterClient; state: StateStore } {
+export function projectRaster(siteId: string, orgId: string | undefined) {
 	const scope = orgId === undefined ? `raster.${siteId}` : `raster.${siteId}.org.${orgId}`
-	const existing = clients.get(scope)
-	if (existing !== undefined) return existing
-
-	const created = {
-		scope,
-		client: createRasterClient({
-			host: HOST,
-			credentials: localStorageCredentialStore(`${scope}.credentials`),
-		}),
-		state: localStorageStateStore(`${scope}.state.`),
-	}
-	clients.set(scope, created)
-	return created
-}
-
-/** Checks a key with Raster, and that it is for `orgId`, without storing it anywhere. */
-export async function verifyApiKey(apiKey: string, orgId: string | undefined): Promise<void> {
-	const client = createRasterClient({ host: HOST, credentials: memoryCredentialStore() })
-	await connectSharedApiKey(client, { apiKey, organizationId: orgId })
+	return { scope, ...scopedRaster(scope, HOST) }
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { toUserMessage } from '@raster-app/react'
+import { checkApiKey, toUserMessage } from '@raster-app/react'
 import type { RenderConfigScreenCtx } from 'datocms-plugin-sdk'
 import { Button, Canvas, FieldGroup, Form, TextField } from 'datocms-react-ui'
-import { type PluginParameters, readParameters, verifyApiKey } from '../client'
+import { type PluginParameters, projectRaster, readParameters } from '../client'
 
 /** Where an admin pins the organization and saves the API key that connects every editor. */
 export default function ConfigScreen({ ctx }: { ctx: RenderConfigScreenCtx }) {
@@ -16,7 +16,10 @@ export default function ConfigScreen({ ctx }: { ctx: RenderConfigScreenCtx }) {
 		setSaving(true)
 		setError(null)
 		try {
-			if (next.apiKey !== undefined) await verifyApiKey(next.apiKey, next.orgId)
+			if (next.apiKey !== undefined) {
+				const { client } = projectRaster(ctx.site.id, next.orgId)
+				await checkApiKey(client, { apiKey: next.apiKey, organizationId: next.orgId })
+			}
 			await ctx.updatePluginParameters(next)
 			setApiKey('')
 			ctx.notice('Settings saved.')

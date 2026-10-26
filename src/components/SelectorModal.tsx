@@ -3,7 +3,7 @@ import { RasterPicker, RasterProvider } from '@raster-app/react'
 import '@raster-app/react/styles.css'
 import type { RenderModalCtx } from 'datocms-plugin-sdk'
 import { Button, Canvas } from 'datocms-react-ui'
-import { getRasterClient, readParameters } from '../client'
+import { projectRaster, readParameters } from '../client'
 import { addStoredAssets, type StoredAsset, toStoredAsset } from '../stored-asset'
 import s from './styles.module.css'
 
@@ -11,14 +11,14 @@ import s from './styles.module.css'
 export default function SelectorModal({ ctx }: { ctx: RenderModalCtx }) {
 	const [picked, setPicked] = useState<StoredAsset[]>([])
 	const { orgId, apiKey } = readParameters(ctx.plugin.attributes.parameters)
-	const { scope, client, state } = getRasterClient(ctx.site.id, orgId)
+	const { scope, ...raster } = projectRaster(ctx.site.id, orgId)
 
 	return (
 		// A full-width modal has a fixed height, which the picker fills, rather than sizing to content.
 		<Canvas ctx={ctx} noAutoResizer>
 			<div className={s.modal}>
 				{/* The provider keeps the client it mounted with, so another scope remounts it. */}
-				<RasterProvider key={scope} client={client} state={state}>
+				<RasterProvider key={scope} {...raster}>
 					<div className={s.picker}>
 						<RasterPicker
 							organizationId={orgId}

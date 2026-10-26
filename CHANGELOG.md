@@ -3,7 +3,7 @@
 ## 1.0.0
 
 A rewrite on Raster's drop-in picker, [`@raster-app/react`](https://www.npmjs.com/package/@raster-app/react)
-`0.2.0` ([SDK docs](https://raster.app/docs/api/sdk)). Editors sign in to Raster from the field
+`0.2.1` ([SDK docs](https://raster.app/docs/api/sdk)). Editors sign in to Raster from the field
 instead of the plugin needing an API key.
 
 ### New
