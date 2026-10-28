@@ -2,11 +2,18 @@ import {
 	closestCenter,
 	DndContext,
 	type DragEndEvent,
+	KeyboardSensor,
 	PointerSensor,
 	useSensor,
 	useSensors,
 } from '@dnd-kit/core'
-import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
+import {
+	arrayMove,
+	rectSortingStrategy,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	useSortable,
+} from '@dnd-kit/sortable'
 import { getBlurhashPlaceholder, getThumbUrl } from '@raster-app/react'
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
 import { Button, Canvas } from 'datocms-react-ui'
@@ -16,15 +23,24 @@ import s from './styles.module.css'
 
 /** Without `onRemove`, as when the field is disabled, it can't be moved or removed. */
 function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove?: () => void }) {
-	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-		id: asset.id,
-		disabled: onRemove === undefined,
-	})
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		setActivatorNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: asset.id, disabled: onRemove === undefined })
 	const blurhash = getBlurhashPlaceholder(asset)
 
 	return (
 		<div
-			ref={setNodeRef}
+			// As the activator, a key pressed on the remove button doesn't start a drag.
+			ref={(node) => {
+				setNodeRef(node)
+				setActivatorNodeRef(node)
+			}}
 			className={s.thumb}
 			style={{
 				transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
@@ -56,8 +72,11 @@ function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove?: () => v
 
 /** The field: its picked assets, in order, and a button that opens the picker to add more. */
 export default function SelectorField({ ctx }: { ctx: RenderFieldExtensionCtx }) {
-	// A click on a thumbnail's remove button isn't a drag.
-	const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
+	const sensors = useSensors(
+		// A click on a thumbnail's remove button isn't a drag.
+		useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+		useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+	)
 
 	// The field stores a JSON string of `StoredAsset[]`, or null when empty.
 	const value = get(ctx.formValues, ctx.fieldPath)

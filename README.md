@@ -127,7 +127,8 @@ In a DatoCMS project with the plugin installed from its built entry:
 - [ ] Upload a file into a library and pick it.
 - [ ] Save an API key in the plugin settings; a browser that never signed in is connected
       without the sign-in. A key for another organization than the pinned one is refused.
-- [ ] Remove the saved key; editors are asked to sign in again on the next load.
+- [ ] Remove the saved key; on the next load, a browser that never signed in shows the sign-in,
+      and one that signed in before stays signed in.
 
 ## License
 
