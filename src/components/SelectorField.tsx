@@ -1,128 +1,148 @@
-import { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
-import { Canvas, Button } from 'datocms-react-ui'
-import { getThumbUrl, getBlurhashPlaceholder } from '@raster-app/raster-toolkit'
+import {
+	closestCenter,
+	DndContext,
+	type DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from '@dnd-kit/core'
+import {
+	arrayMove,
+	rectSortingStrategy,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	useSortable,
+} from '@dnd-kit/sortable'
+import { getBlurhashPlaceholder, getThumbUrl } from '@raster-app/react'
+import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk'
+import { Button, Canvas } from 'datocms-react-ui'
 import get from 'lodash/get'
+import { addStoredAssets, type StoredAsset } from '../stored-asset'
+import s from './styles.module.css'
 
-type Props = {
-	ctx: RenderFieldExtensionCtx
+/** Without `onRemove`, as when the field is disabled, it can't be moved or removed. */
+function Thumbnail({ asset, onRemove }: { asset: StoredAsset; onRemove?: () => void }) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		setActivatorNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: asset.id, disabled: onRemove === undefined })
+	const blurhash = getBlurhashPlaceholder(asset)
+
+	return (
+		<div
+			// As the activator, a key pressed on the remove button doesn't start a drag.
+			ref={(node) => {
+				setNodeRef(node)
+				setActivatorNodeRef(node)
+			}}
+			className={s.thumb}
+			style={{
+				transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+				transition,
+				zIndex: isDragging ? 1 : undefined,
+			}}
+			{...attributes}
+			{...listeners}
+		>
+			{/* 0.x stored videos without dimensions; one picked since has them and a poster in `sizes`. */}
+			{!asset.width && !asset.height ? (
+				<video src={asset.url ?? undefined} className={s.media} muted />
+			) : (
+				<img
+					src={getThumbUrl(asset)}
+					alt={asset.name ?? asset.id}
+					className={s.media}
+					style={blurhash ? { backgroundImage: `url(${blurhash})` } : undefined}
+				/>
+			)}
+			{onRemove && (
+				<button type="button" className={s.remove} aria-label="Remove" onClick={onRemove}>
+					×
+				</button>
+			)}
+		</div>
+	)
 }
 
-const SelectorField = ({ ctx }: Props) => {
-	const initialValueJSON = get(ctx.formValues, ctx.fieldPath || '')
-	const initialValue = JSON.parse(initialValueJSON as string)
+/** The field: its picked assets, in order, and a button that opens the picker to add more. */
+export default function SelectorField({ ctx }: { ctx: RenderFieldExtensionCtx }) {
+	const sensors = useSensors(
+		// A click on a thumbnail's remove button isn't a drag.
+		useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+		useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+	)
 
-	const handleOpenModal = async () => {
-		const result = await ctx.openModal({
+	// The field stores a JSON string of `StoredAsset[]`, or null when empty.
+	const value = get(ctx.formValues, ctx.fieldPath)
+	const assets: StoredAsset[] = typeof value === 'string' && value !== '' ? JSON.parse(value) : []
+
+	function setAssets(next: StoredAsset[]) {
+		ctx.setFieldValue(ctx.fieldPath, next.length === 0 ? null : JSON.stringify(next))
+	}
+
+	function handleDragEnd({ active, over }: DragEndEvent) {
+		if (over === null || active.id === over.id) return
+		const from = assets.findIndex((asset) => asset.id === active.id)
+		const to = assets.findIndex((asset) => asset.id === over.id)
+		setAssets(arrayMove(assets, from, to))
+	}
+
+	async function handleOpenModal() {
+		// What `SelectorModal` resolves with.
+		const picked = (await ctx.openModal({
 			id: 'selectorModal',
-			title: 'Select an asset from Raster',
+			title: 'Select assets from Raster',
 			width: 'fullWidth',
-			parameters: {
-				selectedPhotos: initialValueJSON,
-				formValues: ctx.formValues,
-				fieldPath: ctx.fieldPath,
-			},
-		})
-		if (result) {
-			ctx.setFieldValue(ctx.fieldPath, result)
-		}
-	}
-
-	const handleClearSelection = () => {
-		ctx.setFieldValue(ctx.fieldPath, null)
-	}
-
-	const handleRemoveImage = (imageId: string) => {
-		const newImages = JSON.parse(initialValueJSON as string).filter(
-			(image: any) => image.id !== imageId
-		)
-		const newImagesJSON = newImages.length ? JSON.stringify(newImages) : null
-		ctx.setFieldValue(ctx.fieldPath, newImagesJSON)
-	}
-
-	const isVideo = (image: any) => {
-		return !image.height && !image.width
+		})) as StoredAsset[] | null
+		if (picked?.length) setAssets(addStoredAssets(assets, picked))
 	}
 
 	return (
 		<Canvas ctx={ctx}>
-			<div className="flex flex-col gap-5 border p-5 rounded-md border-gray-200 mt-3">
-				<div className="flex justify-between gap-5 w-full">
-					<h2 className="text-2xl font-medium flex flex-col">
-						Select an asset from Raster
-						{Boolean(initialValue?.length) && (
-							<span className="font-normal text-base text-gray-400">
-								{initialValue?.length} selected
-							</span>
-						)}
-					</h2>
-					<div className="flex flex-col gap-3 items-end">
-						<Button
-							onClick={handleOpenModal}
-							className="w-fit h-fit bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded font-medium transition-colors min-w-36"
-						>
-							{Boolean(initialValue?.length) ? 'Edit selection' : 'Select assets'}
+			<div className={s.field}>
+				{assets.length > 0 && (
+					<DndContext
+						sensors={sensors}
+						collisionDetection={closestCenter}
+						onDragEnd={handleDragEnd}
+					>
+						<SortableContext items={assets} strategy={rectSortingStrategy}>
+							<div className={s.grid}>
+								{assets.map((asset) => (
+									<Thumbnail
+										key={asset.id}
+										asset={asset}
+										onRemove={
+											ctx.disabled
+												? undefined
+												: () => setAssets(assets.filter((other) => other.id !== asset.id))
+										}
+									/>
+								))}
+							</div>
+						</SortableContext>
+					</DndContext>
+				)}
+
+				{!ctx.disabled && (
+					<div className={s.actions}>
+						<Button buttonSize="s" onClick={handleOpenModal}>
+							Browse Raster
 						</Button>
-						{Boolean(initialValue?.length) && (
-							<Button
-								onClick={handleClearSelection}
-								className="w-fit h-fit bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded font-medium transition-colors min-w-36"
-							>
+						{assets.length > 0 && (
+							<Button buttonSize="s" buttonType="negative" onClick={() => setAssets([])}>
 								Clear selection
 							</Button>
 						)}
-					</div>
-				</div>
-
-				{/* Display thumbnails */}
-				{Boolean(initialValue?.length) && (
-					<div className="flex flex-wrap gap-2 mt-3">
-						{initialValue?.map((image: any) => {
-							// Progressive load: real thumbnail is a smaller rendition (sizes)
-							// or the full url; the decoded blurhash paints beneath it.
-							const blurhashUrl = getBlurhashPlaceholder(image)
-							const blurhashStyle = blurhashUrl
-								? {
-										backgroundImage: `url(${blurhashUrl})`,
-										backgroundSize: 'cover' as const,
-										backgroundPosition: 'center' as const,
-									}
-								: undefined
-							return (
-								<div key={image.id} className="relative">
-									{isVideo(image) ? (
-										<video
-											src={image.url}
-											height={112}
-											width={112}
-											className="object-cover h-28 w-28 rounded-md"
-										/>
-									) : (
-										<img
-											src={getThumbUrl(image)}
-											style={blurhashStyle}
-											height={112}
-											width={112}
-											alt={image.id}
-											className="object-cover h-28 w-28 rounded-md"
-										/>
-									)}
-									<button
-										type="button"
-										onClick={() => handleRemoveImage(image.id)}
-										className="absolute -top-2 -right-2 w-6 h-6 text-white cursor-pointer bg-red-500 rounded-full p-1 z-50 border-[3px] border-white flex justify-center items-center bg-primary hover:bg-primary-dark transition-colors"
-									>
-										<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-											<path d="M4 12L12 4M4 4l8 8" strokeLinecap="round" strokeLinejoin="round" />
-										</svg>
-									</button>
-								</div>
-							)
-						})}
 					</div>
 				)}
 			</div>
 		</Canvas>
 	)
 }
-
-export default SelectorField

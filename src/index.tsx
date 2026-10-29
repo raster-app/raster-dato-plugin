@@ -1,13 +1,12 @@
-import { IntentCtx, RenderFieldExtensionCtx, RenderModalCtx, connect } from 'datocms-plugin-sdk'
+import { RenderFieldExtensionCtx, RenderModalCtx, connect } from 'datocms-plugin-sdk'
 import { render } from './utils/render'
 import ConfigScreen from './entrypoints/ConfigScreen'
 import 'datocms-react-ui/styles.css'
-import './styles/globals.scss'
 import SelectorModal from './components/SelectorModal'
 import SelectorField from './components/SelectorField'
 
 connect({
-	manualFieldExtensions(ctx: IntentCtx) {
+	manualFieldExtensions() {
 		return [
 			{
 				id: 'raster',

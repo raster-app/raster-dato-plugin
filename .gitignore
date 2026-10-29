@@ -18,3 +18,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# Vite build, published to npm, not committed
+/dist
+*.tsbuildinfo
+
+# Local Claude Code files
+/.claude/
